@@ -4,7 +4,7 @@ interface Props {
 }
 
 const { title } = Astro.props;
-import CodeMirror from "../layouts/codemirror.astro";
+import Editor from "../components/CodeMirror/Editor";
 ---
 
-<CodeMirror />
+<Editor client:only />
