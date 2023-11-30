@@ -1,0 +1,317 @@
+
+```tsx /const/ showLineNumbers title="test" caption="caption"
+import React, { useEffect, useState } from 'react'
+
+import { UseMutationResult, useMutation, useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'react-router-dom'
+
+import { Box, TablePagination } from '@mui/material'
+
+import { UploadedImage } from '@/components/ImageUpload'
+import { LogData } from '@/components/ProjectLogs/LogItem'
+import LogPopup from '@/components/ProjectLogs/LogPopup'
+
+import { logMapper } from '@/pages/DesignEdit'
+
+import { graphql } from '@/gql'
+import { ApprovalStatus, DesignDoc, PpsListQuery, PpsUpdateInput, Pps_Status } from '@/gql/graphql'
+import { graphQLClient } from '@/utils'
+import { ArrayElement } from '@/utils/util-types'
+
+import { updatePPSMutationDocument } from '../edit'
+import ActionBar from './ActionBar'
+import CustomTable from './CustomTable'
+import PPSTableRow from './PPSTableRow'
+
+const queryPPSDocument = graphql(/* GraphQL */ `
+  query ppsList($filter: DesignDocFilterInput, $pagination: PaginationInput) {
+    designDocs(designDocFilterInput: $filter, paginationInput: $pagination) {
+      edges {
+        node {
+          id
+          season {
+            text
+          }
+          styleId
+          approveId
+          category {
+            name
+          }
+          product
+          image {
+            downloadUrl
+            previewUrl
+          }
+          pps {
+            id
+            status
+            count
+            sendForReviewAt
+            sendForReviewDDL
+            daysOfReview
+            isReviewExpired
+            images {
+              downloadUrl
+              previewUrl
+            }
+          }
+          status
+          sendForReviewAt
+          sendForReviewDDL
+          daysOfReview
+          isReviewExpired
+          color
+          logs {
+            id
+            user {
+              name
+            }
+            createdAt
+            section
+            status
+            ppsStatus
+            submitStatus
+            text
+            attachments {
+              downloadUrl
+              previewUrl
+            }
+          }
+          productColorClassifications {
+            name
+            ppsReceived
+          }
+        }
+      }
+      pageInfo {
+        count
+      }
+    }
+  }
+`)
+
+export type IpManageTableData = PpsListQuery['designDocs']['edges']
+
+export type Row = ArrayElement<IpManageTableData>['node']
+
+// https://github.com/microsoft/TypeScript/issues/30611#issuecomment-570773496
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function createEnumChecker<T extends string, TEnumValue extends string>(enumVariable: {
+  [key in T]: TEnumValue
+}) {
+  const enumValues = Object.values(enumVariable)
+  return (value: string): value is TEnumValue => enumValues.includes(value)
+}
+
+const isValidStatus = createEnumChecker(Pps_Status)
+
+export default function PPSTable(props: {
+  associatedId: null | string | undefined
+  categoryId: null | string | undefined
+  editable?: boolean
+  onImagePreview: (url: string) => void
+  onMultiImagePreview: (images: UploadedImage[]) => void
+  page: number
+  rowsPerPage: number
+  selectable?: boolean
+  selected: Map<string, Row>
+  setPage: React.Dispatch<React.SetStateAction<number>>
+  setRowsPerPage: React.Dispatch<React.SetStateAction<number>>
+  setSelected: React.Dispatch<React.SetStateAction<Map<string, Row>>>
+}): JSX.Element {
+  const {
+    associatedId,
+    categoryId,
+    editable,
+    onImagePreview,
+    onMultiImagePreview,
+    page,
+    rowsPerPage,
+    selectable,
+    selected,
+    setPage,
+    setRowsPerPage,
+    setSelected,
+  } = props
+  const [searchParams] = useSearchParams()
+  const projectId = searchParams.get('projectId') ?? ''
+  const seasonId = searchParams.get('seasonId') ?? ''
+  const status: string = searchParams.get('status') ?? ''
+  const [logTargetId, setLogTargetId] = useState<null | string>(null)
+
+  const filter = isValidStatus(status)
+    ? {
+      associatedId,
+      categoryId,
+      ppsStatus: [status],
+      projectId,
+      seasonId,
+      status: [
+        ApprovalStatus.Proposed,
+        ApprovalStatus.Review,
+        ApprovalStatus.Approved,
+        ApprovalStatus.Rejected,
+        // ApprovalStatus.Cancelled,
+        ApprovalStatus.ModifyAccepted,
+      ],
+    }
+    : {
+      associatedId,
+      categoryId,
+      projectId,
+      seasonId,
+      status: [
+        ApprovalStatus.Proposed,
+        ApprovalStatus.Review,
+        ApprovalStatus.Approved,
+        ApprovalStatus.Rejected,
+        // ApprovalStatus.Cancelled,
+        ApprovalStatus.ModifyAccepted,
+      ],
+    }
+  const queryResult = useQuery({
+    queryFn: async () =>
+      await graphQLClient.request(queryPPSDocument, {
+        filter,
+        pagination: { page, pageSize: rowsPerPage },
+      }),
+    queryKey: ['queryPPSList'],
+  })
+
+  const [idToShowLogs, setIdToShowLogs] = useState<null | string>(null)
+  const [logs, setLogs] = useState<LogData[]>([])
+  const [popupTitle, setPopupTitle] = useState('')
+  const [collapsed, setCollapsed] = useState<boolean>(true)
+
+  useEffect(() => {
+    void queryResult.refetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, seasonId, status, page, rowsPerPage, associatedId, categoryId])
+
+  const updatePPS = useMutation({
+    mutationFn: async (input: PpsUpdateInput) => await graphQLClient.request(updatePPSMutationDocument, { input }),
+  })
+
+  useEffect(() => {
+    if (idToShowLogs) {
+      const row = queryResult.data?.designDocs.edges?.find((edge) => edge.node.id === idToShowLogs)?.node
+      if (row?.logs) setLogs(logMapper(row?.logs as DesignDoc['logs']))
+      else {
+        setIdToShowLogs(null)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idToShowLogs, queryResult.data])
+
+  return (
+    <Box>
+      {selectable && (
+        <ActionBar
+          onSuccess={() => {
+            void (async () => {
+              setSelected(new Map())
+              void (await queryResult.refetch())
+            })()
+          }}
+          selected={selected}
+        />
+      )}
+      <Box sx={{ position: 'relative' }}>
+        <LogPopup
+          logs={logs}
+          mutation={updatePPS as UseMutationResult}
+          onClose={() => {
+            setCollapsed(true)
+          }}
+          onOpen={() => {
+            setCollapsed(false)
+          }}
+          queryRefetch={queryResult.refetch}
+          show={!collapsed ? !collapsed || idToShowLogs != null : false}
+          targetId={logTargetId as string}
+          title={popupTitle}
+        />
+      </Box>
+      <CustomTable<Row, keyof Row>
+        headCells={[
+          { label: '序号' },
+          { label: '合作季度' },
+          { label: '客户款号' },
+          { label: '送审编号' },
+          { label: '品类' },
+          { label: '产品名称' },
+          { label: '款式缩略图' },
+          { label: '产前样缩略图' },
+          { label: '设计稿状态' },
+          { label: '颜色' },
+          { label: '产前样状态' },
+          { label: '操作' },
+        ]}
+        isItemSelected={(row, selected) => selected.has(row.id)}
+        keyName="id"
+        multiSelect={selectable}
+        onClick={(e, row) => {
+          if (['a', 'img', 'input'].includes((e.target as HTMLElement).localName)) return
+          if (row.id === idToShowLogs) {
+            setIdToShowLogs(null)
+            setCollapsed(true)
+            return
+          }
+          setPopupTitle(row.approveId ?? row.product ?? '')
+          setIdToShowLogs(row.id ?? null)
+          setLogTargetId(row.pps?.id ?? null)
+          setCollapsed(false)
+        }}
+        onSelect={(selected: Map<string, Row>) => {
+          setSelected(selected)
+        }}
+        renderRow={(row, i) => (
+          <PPSTableRow
+            data={row}
+            editable={editable ?? false}
+            key={row.id}
+            onImagePreview={(url: string) => {
+              onImagePreview(url)
+            }}
+            onMultiImagePreview={(images: UploadedImage[]) => {
+              onMultiImagePreview(images)
+            }}
+            order={i}
+          />
+        )}
+        rows={queryResult.data?.designDocs.edges?.map((edge) => edge.node) ?? []}
+        selected={selected}
+        sxTable={{
+          '& .MuiTableCell-root': {
+            pl: 1,
+            pr: 1,
+          },
+          '& .MuiTableCell-root:first-child': {
+            pl: 2,
+          },
+        }}
+        sxTableHead={{ backgroundColor: '#eee' }}
+      />
+      {!queryResult.isLoading && (
+        <TablePagination
+          component="div"
+          count={queryResult.data?.designDocs.pageInfo?.count ?? 0}
+          onPageChange={(e, v) => {
+            setPage(v)
+          }}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value))
+            setPage(0)
+          }}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[10, 25, 100]}
+          showFirstButton
+          showLastButton
+          sx={{ mr: 2 }}
+        />
+      )}
+    </Box>
+  )
+}
+```

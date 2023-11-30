@@ -1,0 +1,516 @@
+---
+title: "Markdown + Tailwind"
+---
+
+# Hello
+
+## Introduction
+
+I can link internally to [my conclusion](#conclusion) on the same page when writing Markdown.
+
+## Conclusion
+
+I can use the URL `https://example.com/page-1/#introduction` to navigate directly to my Introduction on the page.
+
+| 表头   | 表头   |
+| ------ | ------ |
+| 单元格 | 单元格 |
+| 单元格 | 单元格 |
+
+# Welcome to StackEdit!
+
+Hi! I'm your first Markdown file in **StackEdit**. If you want to learn about StackEdit, you can read me. If you want to play with Markdown, you can edit me. Once you have finished with me, you can create new files by opening the **file explorer** on the left corner of the navigation bar.
+
+# Files
+
+StackEdit stores your files in your browser, which means all your files are automatically saved locally and are accessible **offline!**
+
+## Create files and folders
+
+The file explorer is accessible using the button in left corner of the navigation bar. You can create a new file by clicking the **New file** button in the file explorer. You can also create folders by clicking the **New folder** button.
+
+## Switch to another file
+
+All your files and folders are presented as a tree in the file explorer. You can switch from one to another by clicking a file in the tree.
+
+## Rename a file
+
+You can rename the current file by clicking the file name in the navigation bar or by clicking the **Rename** button in the file explorer.
+
+## Delete a file
+
+You can delete the current file by clicking the **Remove** button in the file explorer. The file will be moved into the **Trash** folder and automatically deleted after 7 days of inactivity.
+
+## Export a file
+
+You can export the current file by clicking **Export to disk** in the menu. You can choose to export the file as plain Markdown, as HTML using a Handlebars template or as a PDF.
+
+# Synchronization
+
+Synchronization is one of the biggest features of StackEdit. It enables you to synchronize any file in your workspace with other files stored in your **Google Drive**, your **Dropbox** and your **GitHub** accounts. This allows you to keep writing on other devices, collaborate with people you share the file with, integrate easily into your workflow... The synchronization mechanism takes place every minute in the background, downloading, merging, and uploading file modifications.
+
+There are two types of synchronization and they can complement each other:
+
+- The workspace synchronization will sync all your files, folders and settings automatically. This will allow you to fetch your workspace on any other device.
+
+  > To start syncing your workspace, just sign in with Google in the menu.
+
+- The file synchronization will keep one file of the workspace synced with one or multiple files in **Google Drive**, **Dropbox** or **GitHub**.
+  > Before starting to sync files, you must link an account in the **Synchronize** sub-menu.
+
+## Open a file
+
+You can open a file from **Google Drive**, **Dropbox** or **GitHub** by opening the **Synchronize** sub-menu and clicking **Open from**. Once opened in the workspace, any modification in the file will be automatically synced.
+
+## Save a file
+
+You can save any file of the workspace to **Google Drive**, **Dropbox** or **GitHub** by opening the **Synchronize** sub-menu and clicking **Save on**. Even if a file in the workspace is already synced, you can save it to another location. StackEdit can sync one file with multiple locations and accounts.
+
+## Synchronize a file
+
+Once your file is linked to a synchronized location, StackEdit will periodically synchronize it by downloading/uploading any modification. A merge will be performed if necessary and conflicts will be resolved.
+
+If you just have modified your file and you want to force syncing, click the **Synchronize now** button in the navigation bar.
+
+> **Note:** The **Synchronize now** button is disabled if you have no file to synchronize.
+
+## Manage file synchronization
+
+Since one file can be synced with multiple locations, you can list and manage synchronized locations by clicking **File synchronization** in the **Synchronize** sub-menu. This allows you to list and remove synchronized locations that are linked to your file.
+
+# Publication
+
+Publishing in StackEdit makes it simple for you to publish online your files. Once you're happy with a file, you can publish it to different hosting platforms like **Blogger**, **Dropbox**, **Gist**, **GitHub**, **Google Drive**, **WordPress** and **Zendesk**. With [Handlebars templates](http://handlebarsjs.com/), you have full control over what you export.
+
+> Before starting to publish, you must link an account in the **Publish** sub-menu.
+
+## Publish a File
+
+You can publish your file by opening the **Publish** sub-menu and by clicking **Publish to**. For some locations, you can choose between the following formats:
+
+- Markdown: publish the Markdown text on a website that can interpret it (**GitHub** for instance),
+- HTML: publish the file converted to HTML via a Handlebars template (on a blog for example).
+
+## Update a publication
+
+After publishing, StackEdit keeps your file linked to that publication which makes it easy for you to re-publish it. Once you have modified your file and you want to update your publication, click on the **Publish now** button in the navigation bar.
+
+> **Note:** The **Publish now** button is disabled if your file has not been published yet.
+
+## Manage file publication
+
+Since one file can be published to multiple locations, you can list and manage publish locations by clicking **File publication** in the **Publish** sub-menu. This allows you to list and remove publication locations that are linked to your file.
+
+# Markdown extensions
+
+StackEdit extends the standard Markdown syntax by adding extra **Markdown extensions**, providing you with some nice features.
+
+> **ProTip:** You can disable any **Markdown extension** in the **File properties** dialog.
+
+## SmartyPants
+
+SmartyPants converts ASCII punctuation characters into "smart" typographic punctuation HTML entities. For example:
+
+|                  | ASCII                           | HTML                          |
+| ---------------- | ------------------------------- | ----------------------------- |
+| Single backticks | `'Isn't this fun?'`             | 'Isn't this fun?'             |
+| Quotes           | `"Isn't this fun?"`             | "Isn't this fun?"             |
+| Dashes           | `-- is en-dash, --- is em-dash` | -- is en-dash, --- is em-dash |
+
+## KaTeX
+
+You can render LaTeX mathematical expressions using [KaTeX](https://khan.github.io/KaTeX/):
+
+The _Gamma function_ satisfying $\Gamma(n) = (n-1)!\quad\forall n\in\mathbb N$ is via the Euler integral
+
+[//]: # "$$"
+[//]: # "\\Gamma(z) = \\int_0^\\infty t^{z-1}e^{-t}dt,."
+[//]: # "$$"
+[//]: #
+
+> You can find more information about **LaTeX** mathematical expressions [here](http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference).
+
+## UML diagrams
+
+You can render UML diagrams using [Mermaid](https://mermaidjs.github.io/). For example, this will produce a sequence diagram:
+
+```mermaid
+
+sequenceDiagram
+
+Alice ->> Bob: Hello Bob, how are you?
+
+Bob-->>John: How about you John?
+
+Bob--x Alice: I am good thanks!
+
+Bob-x John: I am good thanks!
+
+Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+
+Bob-->Alice: Checking with John...
+
+Alice->John: Yes... John, how are you?
+
+```
+
+And this will produce a flow chart:
+
+```mermaid
+
+graph LR
+
+A[Square Rect] -- Link text --> B((Circle))
+
+A --> C(Round Rect)
+
+B --> D{Rhombus}
+
+C --> D
+
+```
+
+# GFM
+
+## Autolink literals
+
+www.example.com, https://example.com, and contact@example.com.
+
+## Footnote
+
+A note[^1]
+
+[^1]: Big note.
+
+## Strikethrough
+
+~one~ or ~~two~~ tildes.
+
+## Table
+
+| a   | b   |   c |  d  |
+| --- | :-- | --: | :-: |
+
+## Tasklist
+
+- [ ] to do
+- [x] done
+
+```tsx showLineNumbers {1-3,4}
+import React, { useEffect, useState } from 'react'
+
+import { UseMutationResult, useMutation, useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'react-router-dom'
+
+import { Box, TablePagination } from '@mui/material'
+
+import { UploadedImage } from '@/components/ImageUpload'
+import { LogData } from '@/components/ProjectLogs/LogItem'
+import LogPopup from '@/components/ProjectLogs/LogPopup'
+
+import { logMapper } from '@/pages/DesignEdit'
+
+import { graphql } from '@/gql'
+import { ApprovalStatus, DesignDoc, PpsListQuery, PpsUpdateInput, Pps_Status } from '@/gql/graphql'
+import { graphQLClient } from '@/utils'
+import { ArrayElement } from '@/utils/util-types'
+
+import { updatePPSMutationDocument } from '../edit'
+import ActionBar from './ActionBar'
+import CustomTable from './CustomTable'
+import PPSTableRow from './PPSTableRow'
+
+const queryPPSDocument = graphql(/* GraphQL */ `
+  query ppsList($filter: DesignDocFilterInput, $pagination: PaginationInput) {
+    designDocs(designDocFilterInput: $filter, paginationInput: $pagination) {
+      edges {
+        node {
+          id
+          season {
+            text
+          }
+          styleId
+          approveId
+          category {
+            name
+          }
+          product
+          image {
+            downloadUrl
+            previewUrl
+          }
+          pps {
+            id
+            status
+            count
+            sendForReviewAt
+            sendForReviewDDL
+            daysOfReview
+            isReviewExpired
+            images {
+              downloadUrl
+              previewUrl
+            }
+          }
+          status
+          sendForReviewAt
+          sendForReviewDDL
+          daysOfReview
+          isReviewExpired
+          color
+          logs {
+            id
+            user {
+              name
+            }
+            createdAt
+            section
+            status
+            ppsStatus
+            submitStatus
+            text
+            attachments {
+              downloadUrl
+              previewUrl
+            }
+          }
+          productColorClassifications {
+            name
+            ppsReceived
+          }
+        }
+      }
+      pageInfo {
+        count
+      }
+    }
+  }
+`)
+
+export type IpManageTableData = PpsListQuery['designDocs']['edges']
+
+export type Row = ArrayElement<IpManageTableData>['node']
+
+// https://github.com/microsoft/TypeScript/issues/30611#issuecomment-570773496
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function createEnumChecker<T extends string, TEnumValue extends string>(enumVariable: {
+  [key in T]: TEnumValue
+}) {
+  const enumValues = Object.values(enumVariable)
+  return (value: string): value is TEnumValue => enumValues.includes(value)
+}
+
+const isValidStatus = createEnumChecker(Pps_Status)
+
+export default function PPSTable(props: {
+  associatedId: null | string | undefined
+  categoryId: null | string | undefined
+  editable?: boolean
+  onImagePreview: (url: string) => void
+  onMultiImagePreview: (images: UploadedImage[]) => void
+  page: number
+  rowsPerPage: number
+  selectable?: boolean
+  selected: Map<string, Row>
+  setPage: React.Dispatch<React.SetStateAction<number>>
+  setRowsPerPage: React.Dispatch<React.SetStateAction<number>>
+  setSelected: React.Dispatch<React.SetStateAction<Map<string, Row>>>
+}): JSX.Element {
+  const {
+    associatedId,
+    categoryId,
+    editable,
+    onImagePreview,
+    onMultiImagePreview,
+    page,
+    rowsPerPage,
+    selectable,
+    selected,
+    setPage,
+    setRowsPerPage,
+    setSelected,
+  } = props
+  const [searchParams] = useSearchParams()
+  const projectId = searchParams.get('projectId') ?? ''
+  const seasonId = searchParams.get('seasonId') ?? ''
+  const status: string = searchParams.get('status') ?? ''
+  const [logTargetId, setLogTargetId] = useState<null | string>(null)
+
+  const filter = isValidStatus(status)
+    ? {
+      associatedId,
+      categoryId,
+      ppsStatus: [status],
+      projectId,
+      seasonId,
+      status: [
+        ApprovalStatus.Proposed,
+        ApprovalStatus.Review,
+        ApprovalStatus.Approved,
+        ApprovalStatus.Rejected,
+        // ApprovalStatus.Cancelled,
+        ApprovalStatus.ModifyAccepted,
+      ],
+    }
+    : {
+      associatedId,
+      categoryId,
+      projectId,
+      seasonId,
+      status: [
+        ApprovalStatus.Proposed,
+        ApprovalStatus.Review,
+        ApprovalStatus.Approved,
+        ApprovalStatus.Rejected,
+        // ApprovalStatus.Cancelled,
+        ApprovalStatus.ModifyAccepted,
+      ],
+    }
+  const queryResult = useQuery({
+    queryFn: async () =>
+      await graphQLClient.request(queryPPSDocument, {
+        filter,
+        pagination: { page, pageSize: rowsPerPage },
+      }),
+    queryKey: ['queryPPSList'],
+  })
+
+  const [idToShowLogs, setIdToShowLogs] = useState<null | string>(null)
+  const [logs, setLogs] = useState<LogData[]>([])
+  const [popupTitle, setPopupTitle] = useState('')
+  const [collapsed, setCollapsed] = useState<boolean>(true)
+
+  useEffect(() => {
+    void queryResult.refetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, seasonId, status, page, rowsPerPage, associatedId, categoryId])
+
+  const updatePPS = useMutation({
+    mutationFn: async (input: PpsUpdateInput) => await graphQLClient.request(updatePPSMutationDocument, { input }),
+  })
+
+  useEffect(() => {
+    if (idToShowLogs) {
+      const row = queryResult.data?.designDocs.edges?.find((edge) => edge.node.id === idToShowLogs)?.node
+      if (row?.logs) setLogs(logMapper(row?.logs as DesignDoc['logs']))
+      else {
+        setIdToShowLogs(null)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idToShowLogs, queryResult.data])
+
+  return (
+    <Box>
+      {selectable && (
+        <ActionBar
+          onSuccess={() => {
+            void (async () => {
+              setSelected(new Map())
+              void (await queryResult.refetch())
+            })()
+          }}
+          selected={selected}
+        />
+      )}
+      <Box sx={{ position: 'relative' }}>
+        <LogPopup
+          logs={logs}
+          mutation={updatePPS as UseMutationResult}
+          onClose={() => {
+            setCollapsed(true)
+          }}
+          onOpen={() => {
+            setCollapsed(false)
+          }}
+          queryRefetch={queryResult.refetch}
+          show={!collapsed ? !collapsed || idToShowLogs != null : false}
+          targetId={logTargetId as string}
+          title={popupTitle}
+        />
+      </Box>
+      <CustomTable<Row, keyof Row>
+        headCells={[
+          { label: '序号' },
+          { label: '合作季度' },
+          { label: '客户款号' },
+          { label: '送审编号' },
+          { label: '品类' },
+          { label: '产品名称' },
+          { label: '款式缩略图' },
+          { label: '产前样缩略图' },
+          { label: '设计稿状态' },
+          { label: '颜色' },
+          { label: '产前样状态' },
+          { label: '操作' },
+        ]}
+        isItemSelected={(row, selected) => selected.has(row.id)}
+        keyName="id"
+        multiSelect={selectable}
+        onClick={(e, row) => {
+          if (['a', 'img', 'input'].includes((e.target as HTMLElement).localName)) return
+          if (row.id === idToShowLogs) {
+            setIdToShowLogs(null)
+            setCollapsed(true)
+            return
+          }
+          setPopupTitle(row.approveId ?? row.product ?? '')
+          setIdToShowLogs(row.id ?? null)
+          setLogTargetId(row.pps?.id ?? null)
+          setCollapsed(false)
+        }}
+        onSelect={(selected: Map<string, Row>) => {
+          setSelected(selected)
+        }}
+        renderRow={(row, i) => (
+          <PPSTableRow
+            data={row}
+            editable={editable ?? false}
+            key={row.id}
+            onImagePreview={(url: string) => {
+              onImagePreview(url)
+            }}
+            onMultiImagePreview={(images: UploadedImage[]) => {
+              onMultiImagePreview(images)
+            }}
+            order={i}
+          />
+        )}
+        rows={queryResult.data?.designDocs.edges?.map((edge) => edge.node) ?? []}
+        selected={selected}
+        sxTable={{
+          '& .MuiTableCell-root': {
+            pl: 1,
+            pr: 1,
+          },
+          '& .MuiTableCell-root:first-child': {
+            pl: 2,
+          },
+        }}
+        sxTableHead={{ backgroundColor: '#eee' }}
+      />
+      {!queryResult.isLoading && (
+        <TablePagination
+          component="div"
+          count={queryResult.data?.designDocs.pageInfo?.count ?? 0}
+          onPageChange={(e, v) => {
+            setPage(v)
+          }}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value))
+            setPage(0)
+          }}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[10, 25, 100]}
+          showFirstButton
+          showLastButton
+          sx={{ mr: 2 }}
+        />
+      )}
+    </Box>
+  )
+}
+
+```

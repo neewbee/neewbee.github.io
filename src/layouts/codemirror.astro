@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  </head>
+  <body>
+    <h2>Monaco Editor Sample - Loading with requirejs</h2>
+    <div
+      id="container"
+      style="width: 800px; height: 600px; border: 1px solid grey"
+    >
+    </div>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js"
+      integrity="sha256-0SGl1PJNDyJwcV5T+weg2zpEMrh7xvlwO4oXgvZCeZk="
+      crossorigin="anonymous"></script>
+    <script>
+      require.config({ paths: { vs: "/vs" } });
+
+      require(["vs/editor/editor.main"], function () {
+        var editor = monaco.editor.create(
+          document.getElementById("container"),
+          {
+            value:
+              "export default function ReactJSX() {\n" +
+              "// return 'ReactJSX'\n" +
+              '  return <div className="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-lg flex items-center space-x-4">\n' +
+              '    <div className="shrink-0">\n' +
+              '      <img className="h-12 w-12" src="/public/favicon.svg" alt="ChitChat Logo" />\n' +
+              "    </div>\n" +
+              "    <div>\n" +
+              '      <div className="text-xl font-medium text-black">ChitChat</div>\n' +
+              '      <p className="text-slate-500">You have a new message!</p>\n' +
+              "    </div>\n" +
+              "  </div>\n" +
+              "}\n",
+            language: "tsx",
+            automaticLayout: true,
+          },
+        );
+      });
+    </script>
+  </body>
+</html>

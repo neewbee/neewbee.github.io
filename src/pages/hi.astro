@@ -1,0 +1,16 @@
+---
+import MDX from "../components/MDX.mdx";
+import FancyLink from "../components/Link.astro";
+import ReactJSX from "../components/ReactJSX.jsx";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <ReactJSX />
+
+  <div class="flex items-centerflex-col bg-red-100 text-4xl">test</div>
+  <div class="prose dark:prose-invert prose-slate flex items-center flex-col">
+    <MDX components={{ a: FancyLink }} />
+  </div>
+</Layout>
+<!--<MDX components={{a: FancyLink}}/>-->
