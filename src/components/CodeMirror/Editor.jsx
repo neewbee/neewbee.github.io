@@ -1,25 +1,16 @@
 import { EditorState, Compartment } from "@codemirror/state";
-import { keymap, drawSelection } from "@codemirror/view";
 import { basicSetup, EditorView } from "codemirror";
-import {
-  syntaxHighlighting,
-  defaultHighlightStyle,
-} from "@codemirror/language";
-import { markdown } from "@codemirror/lang-markdown";
-import { languages } from "@codemirror/language-data";
-import { markdownLanguage } from "@codemirror/lang-markdown";
+
 import { vim } from "@replit/codemirror-vim";
 
 import { javascript } from "@codemirror/lang-javascript";
-import { html } from "@codemirror/lang-html";
 
-import { defaultKeymap } from "@codemirror/commands";
 import { useEffect, useRef } from "react";
 
-import { materialDark } from "cm6-theme-material-dark";
+import { materialDark } from "./cm6-theme-material-dark.js";
 
-import testDoc from "./testDoc.js";
 import testJavascriptDoc from "./js.code.example";
+
 const themeConfig = new Compartment();
 
 export default function () {
@@ -39,7 +30,7 @@ export default function () {
 
     let startState = EditorState.create({
       doc: testJavascriptDoc,
-      // doc: testJavascriptDoc,
+      // doc: testDoc,
       extensions: [
         vim(),
         basicSetup,
@@ -50,9 +41,10 @@ export default function () {
         //   addKeymap: true,
         //   extensions: [],
         // }),
-        updateListenerExtension,
-        // themeConfig.of(materialDark),
-        syntaxHighlighting(defaultHighlightStyle),
+        // materialDark,
+        // updateListenerExtension,
+        themeConfig.of(materialDark),
+        // syntaxHighlighting(defaultHighlightStyle),
       ],
     });
 
@@ -62,9 +54,7 @@ export default function () {
 
       // parent: document.body,
     });
-
-    console.log(ref);
   }, [ref]);
-  console.log("ref", ref);
+
   return <div id="code-mirror" ref={ref}></div>;
 }

@@ -2,6 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
 import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
+
 import rehypePrettyCode from "rehype-pretty-code";
 
 import react from "@astrojs/react";
@@ -14,19 +15,26 @@ export default defineConfig({
   integrations: [tailwind(), mdx(), react()],
   markdown: {
     syntaxHighlight: false,
-    remarkPlugins: [remarkReadingTime],
-    rehypePlugins: [[rehypePrettyCode, {
-      theme: 'dracula',
-      onVisitHighlightedLine(node) {
-        console.log('node', node)
-        // node.properties.className.push('highlighted');
-      },
-      onVisitHighlightedWord(node) {
-        // node.properties.className = ['word'];
-      },
-    }]],
+    // remarkPlugins: [remarkReadingTime],
+    remarkPlugins: [
+    ],
+    rehypePlugins: [
+      [
+        rehypePrettyCode,
+        {
+          theme: "dracula",
+          onVisitHighlightedLine(node) {
+            console.log("node", node);
+            // node.properties.className.push('highlighted');
+          },
+          onVisitHighlightedWord(node) {
+            // node.properties.className = ['word'];
+          },
+        },
+      ],
+    ],
     extendDefaultPlugins: true,
-  }
+  },
 });
 
 /**
@@ -73,4 +81,3 @@ export default defineConfig({
 //     syntaxHighlight: 'prism',
 //   }
 // });
-

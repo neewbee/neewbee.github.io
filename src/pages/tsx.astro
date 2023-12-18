@@ -4,10 +4,11 @@ interface Props {
 }
 
 const { title } = Astro.props;
-import TsxConent from "../content/tsx.mdx";
+import TsxConent from "../components/tsx.mdx";
 import MDXLayout from "../layouts/MDXLayout.astro";
 ---
 
 <MDXLayout>
+  <div class="bg-red-100 w-full">hi</div>
   <TsxConent />
 </MDXLayout>
