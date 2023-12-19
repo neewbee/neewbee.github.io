@@ -28,6 +28,7 @@ const base00 = "#2e3235",
 const invalid = base_red,
   darkBackground = "#202325",
   highlightBackground = "#545b61",
+  highlightActiveLineBackground = "rgba(84,91,97,0.35)",
   background = base00,
   tooltipBackground = base01,
   selection = base01,
@@ -61,7 +62,7 @@ export const materialDarkTheme = EditorView.theme(
       backgroundColor: highlightBackground,
     },
 
-    ".cm-activeLine": { backgroundColor: highlightBackground },
+    ".cm-activeLine": { backgroundColor: highlightActiveLineBackground },
     ".cm-selectionMatch": {
       backgroundColor: darkBackground,
       outline: `1px solid ${base_teal}`,
@@ -83,7 +84,7 @@ export const materialDarkTheme = EditorView.theme(
     },
 
     ".cm-activeLineGutter": {
-      backgroundColor: highlightBackground,
+      backgroundColor: highlightActiveLineBackground,
       color: base07,
     },
 
