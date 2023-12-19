@@ -1,4 +1,7 @@
+// https://github.com/craftzdog/cm6-themes/blob/main/packages/material-dark/src/index.ts
+
 import { EditorView } from "@codemirror/view";
+import { type Extension } from "@codemirror/state";
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { tags as t } from "@lezer/highlight";
 
@@ -211,7 +214,7 @@ export const materialDarkHighlightStyle = HighlightStyle.define([
 
 /// Extension to enable the Material Dark theme (both the editor theme and
 /// the highlight style).
-export const materialDark = [
+export const materialDark: Extension = [
   materialDarkTheme,
   syntaxHighlighting(materialDarkHighlightStyle),
 ];
