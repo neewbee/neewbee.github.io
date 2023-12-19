@@ -1,18 +1,20 @@
 import * as React from "react";
+import { useEffect, useRef } from "react";
+
 import { EditorState, Compartment, type Extension } from "@codemirror/state";
 import { basicSetup, EditorView } from "codemirror";
 
 import { vim } from "@replit/codemirror-vim";
 
 import { javascript } from "@codemirror/lang-javascript";
-
-import { useEffect, useRef } from "react";
+import { cpp } from "@codemirror/lang-cpp";
 
 import { materialDark } from "./themes/cm6-theme-material-dark.ts";
 import { basicLight } from "./themes/cm6-theme-basic-light.ts";
 
-import testJavascriptDoc from "./js.code.example";
-import useColorMode from "../../hooks/useColorMode.ts";
+import testJavascriptDoc from "./js.code.example.js";
+import glsl from "../GLSLPart1/shader.glsl.ts";
+import useColorMode from "../../../hooks/useColorMode.ts";
 
 const themeConfig = new Compartment();
 const editorMode = new Compartment();
@@ -47,15 +49,21 @@ function updateView(view: EditorView, options: Options) {
   }
 }
 
-export default function () {
+interface Props {
+  onChange: (code: string) => void;
+  code: string;
+}
+
+export default function (props: Props) {
   const ref = useRef(null);
+  const { onChange, code } = props;
   const [vimMode, setVimMode] = React.useState(true);
   const [codemirrorView, setCodeMirrorView] = React.useState<EditorView>();
   useEffect(() => {
     let updateListenerExtension = EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         const code = update.state.doc.toString();
-        console.log(code);
+        onChange(code);
         // Handle the event here
       }
     });
@@ -65,12 +73,13 @@ export default function () {
     // });
 
     let startState = EditorState.create({
-      doc: testJavascriptDoc,
+      doc: code,
       // doc: testDoc,
       extensions: [
         editorMode.of([vim({ status: true })]),
         basicSetup,
-        javascript(),
+        // javascript(),
+        cpp(),
         // markdown({
         //   base: markdownLanguage,
         //   codeLanguages: languages,
@@ -78,7 +87,7 @@ export default function () {
         //   extensions: [],
         // }),
         // materialDark,
-        // updateListenerExtension,
+        updateListenerExtension,
         themeConfig.of([materialDark]),
         // syntaxHighlighting(defaultHighlightStyle),
       ],
@@ -96,7 +105,6 @@ export default function () {
 
   React.useEffect(() => {
     if (codemirrorView) {
-      console.log("vimMode", vimMode);
       updateView(codemirrorView, {
         enableVim: vimMode,
         preferColorMode: colorMode,

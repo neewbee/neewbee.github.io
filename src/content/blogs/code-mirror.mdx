@@ -4,14 +4,24 @@ tags: ["ti", "er"]
 images: blog  2
 ---
 
-import Editor from "../../components/CodeMirror/Editor.tsx";
+import GLSLPart1 from "../../components/react/GLSLPart1/GLSPart1";
 import Layout from "../../layouts/Layout.astro";
+
+export function onChange(code) {
+  console.log('---')
+  console.log(code)
+}
 
 <Layout>
   <div className="prose dark:prose-invert prose-slate flex flex-row items-center">
-    hi
+    hisss
   </div>
-  <Editor client:only />
+  <GLSLPart1 client:only="react" />
+  <div className="prose dark:prose-invert prose-slate flex flex-row items-center">
+    # hii
+    ---
+    - [ ] todo
+  </div>
 </Layout>
 
 

@@ -12,7 +12,13 @@ import react from "@astrojs/react";
  */
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), mdx(), react()],
+  integrations: [
+    tailwind(),
+    mdx(),
+    react({
+      include: ['**/react/*'],
+   })
+  ],
   markdown: {
     syntaxHighlight: false,
     // remarkPlugins: [remarkReadingTime],

@@ -1,0 +1,18 @@
+---
+import Editor from "../../components/react/CodeMirror/Editor.tsx";
+import Layout from "../../layouts/Layout.astro";
+
+export function onChange(code) {
+  console.log("---");
+  console.log(code);
+}
+---
+
+<Layout>
+  <div class="prose dark:prose-invert prose-slate flex flex-row items-center">
+    pages/astros/code-mirror-astro
+  </div>
+  <Editor client:only="react" onChange={onChange} />
+  <div class="prose dark:prose-invert prose-slate flex flex-row items-center">
+  </div>
+</Layout>
