@@ -1,52 +1,21 @@
-const glsl = `uniform float u_time;
+const glsl = `uniform float u_slider;
 varying vec2 vUv;
-uniform float u_slider;
-
-// C-style macro to define constants
-#define K 0.4
-
-float circleSDF(vec2 uv, vec2 p, float r)
-{
-  return length(p-uv) - r;
-}
-
-float smin(float a, float b, float k)
-{
-  float h = max( k-abs(a-b), 0.0 )/k;
-  return min( a, b ) - h*h*k*(1.0/4.0);
-}
-
-// Map a value from -1 to 1 to out_min to out_max
-float trigmap(float x, float out_min, float out_max)
-{
-  return out_min + (x + 1.) * (out_max - out_min) / (2.);
-}
 
 void main() {
-  vec2 uv = vUv;
+    vec2 st = vUv;
 
-  // Define the center of each metaball
-  vec2 c1 = vec2(0.4,trigmap(cos(u_time), 0.3, 0.4));
-  vec2 c2 = vec2(trigmap(sin(u_time), 0.4, 0.7), 0.5);
-  vec2 c3 = vec2(0.5, trigmap(cos(u_time), 0.6, 0.7));
-  vec2 c4 = vec2(trigmap(cos(u_time), 0.4, 0.63), 0.3);
-  // Store the centers in an array
-  vec2 centers[4] = vec2[4](c1,c2,c3,c4);
+    // Distance of the current pixel to the center of the canvas
+    float d = distance(st, vec2(0.5));
 
-  // Initialize the distance and define the smoothing factor
-  float d = 99.;
+    // Using step to get a sharp circle
+    // s = 1 if d > 0.25, 0 otherwise
+    float s = step(0.25, d);
 
-  // Iterate over the centers and compute the sdf
-  for (int i = 0; i < 4; i++) {
-    vec2 c = centers[i];
-    float sdf = circleSDF(uv, c, .1*u_slider);
-    d = smin(d, sdf, K);
-  }
-  // Define the metaball
-  float metaball = 1. - smoothstep(0., 0.005, d);
+    // Mix the two colors based on the slider
+    // color = u_slider * s + (1-u_slider) * d
+    float brightness = mix(d, s, u_slider);
 
-  gl_FragColor = vec4(vec3(metaball), 1.0);
-}
-`;
+    gl_FragColor = vec4(vec3(brightness), 1.0);
+}`;
 
 export default glsl;
