@@ -1,6 +1,6 @@
 import { initColorBuffer } from "./initColorBuffer.ts";
 
-function initBuffers(gl) {
+function initBuffers(gl: WebGLRenderingContext) {
   const positionBuffer = initPositionBuffer(gl);
   const colorBuffer = initColorBuffer(gl);
 
@@ -10,7 +10,7 @@ function initBuffers(gl) {
   };
 }
 
-function initPositionBuffer(gl) {
+function initPositionBuffer(gl: WebGLRenderingContext) {
   // Create a buffer for the square's positions.
   const positionBuffer = gl.createBuffer();
 

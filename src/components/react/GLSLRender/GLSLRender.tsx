@@ -10,18 +10,9 @@ interface Props {
 //
 function loadShader(gl: WebGLRenderingContext, type: GLenum, source: string) {
   const shader = gl.createShader(type);
-
   if (!shader) throw new Error("no shader created");
-  // Send the source to the shader object
-
   gl.shaderSource(shader, source);
-
-  // Compile the shader program
-
   gl.compileShader(shader);
-
-  // See if it compiled successfully
-
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
     alert(
       "An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader),
@@ -29,7 +20,6 @@ function loadShader(gl: WebGLRenderingContext, type: GLenum, source: string) {
     gl.deleteShader(shader);
     return null;
   }
-
   return shader;
 }
 
@@ -59,6 +49,7 @@ function initShaderProgram(
       "Unable to initialize the shader program: " +
         gl.getProgramInfoLog(shaderProgram),
     );
+    gl.deleteProgram(shaderProgram);
     return null;
   }
 
@@ -66,6 +57,7 @@ function initShaderProgram(
 }
 
 function useCanvasWebGL(canvasRef: RefObject<HTMLCanvasElement>) {
+  console.log("render webgl");
   const canvas = canvasRef.current;
   if (canvas) {
     const gl = canvas.getContext("webgl");
@@ -103,12 +95,16 @@ void main(void) {
 }
   `;
 
+    // 1. create shader / attach shader / link program / get a GLSL program on the GPU
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
     if (!shaderProgram) return;
+
+    // 2. supply data to the GLSL program
 
     const programInfo = {
       program: shaderProgram,
       attribLocations: {
+        // look up the location of the attribute for the program just created
         vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
         vertexColor: gl.getAttribLocation(shaderProgram, "aVertexColor"),
       },
@@ -124,10 +120,14 @@ void main(void) {
       },
     };
 
-    // Here's where we call the routine that builds all the
-    // objects we'll be drawing.
+    // create buffer / bind buffer location / buffer data
     const buffers = initBuffers(gl);
 
+    console.log("gl.canvas.width", gl.canvas.width);
+    console.log("gl.canvas.height", gl.canvas.height);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    //
+    // 3. render
     // Draw the scene
     drawScene(gl, programInfo, buffers);
   }
@@ -138,13 +138,77 @@ export default function (props: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    useCanvasWebGL(canvasRef);
+    console.log("canvasRef", canvasRef);
+    const canvasElement = canvasRef.current;
+
+    if (canvasElement) {
+      const canvasToDisplaySizeMap = new Map<HTMLCanvasElement, number[]>([
+        [canvasElement, [400, 400]],
+      ]);
+
+      const updateCanvasSize = () => {
+        const [displayWidth, displayHeight] =
+          canvasToDisplaySizeMap.get(canvasElement) || [];
+        canvasElement.width = displayWidth;
+        canvasElement.height = displayHeight;
+        console.log("updateCavasSize");
+        useCanvasWebGL(canvasRef);
+      };
+      function onResize(entries: ResizeObserverEntry[]) {
+        for (const entry of entries) {
+          let width: number;
+          let height: number;
+          let dpr = window.devicePixelRatio;
+          if (entry.devicePixelContentBoxSize) {
+            // NOTE: Only this path gives the correct answer
+            // The other paths are an imperfect fallback
+            // for browsers that don't provide anyway to do this
+            width = entry.devicePixelContentBoxSize[0].inlineSize;
+            height = entry.devicePixelContentBoxSize[0].blockSize;
+            dpr = 1; // it's already in width and height
+          } else if (entry.contentBoxSize) {
+            if (entry.contentBoxSize[0]) {
+              width = entry.contentBoxSize[0].inlineSize;
+              height = entry.contentBoxSize[0].blockSize;
+            } else {
+              // legacy
+              // @ts-ignore
+              width = entry.contentBoxSize.inlineSize;
+              // @ts-ignore
+              height = entry.contentBoxSize.blockSize;
+            }
+          } else {
+            // legacy
+            width = entry.contentRect.width;
+            height = entry.contentRect.height;
+          }
+          const displayWidth = Math.round(width * dpr);
+          const displayHeight = Math.round(height * dpr);
+          canvasToDisplaySizeMap.set(entry.target as HTMLCanvasElement, [
+            displayWidth,
+            displayHeight,
+          ]);
+          updateCanvasSize();
+        }
+      }
+
+      // updateCanvasSize();
+      const resizeObserver = new ResizeObserver(onResize);
+      resizeObserver.observe(canvasElement, { box: "content-box" });
+
+      return () => resizeObserver.unobserve(canvasElement);
+    }
   }, [canvasRef]);
+
+  useEffect(() => {}, []);
 
   return (
     <code>
       <pre>{code}</pre>
-      <canvas ref={canvasRef} height="1080" width="1920"></canvas>
+      <canvas
+        ref={canvasRef}
+        style={{ width: "100%", height: "300px", display: "block" }}
+      ></canvas>
     </code>
   );
 }
