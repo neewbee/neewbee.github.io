@@ -1,12 +1,19 @@
-import { type RefObject, useEffect } from "react";
+import { type RefObject, useEffect, useState } from "react";
+import type { RenderCanvasReturn } from "./GLSLRender.tsx";
 
 interface Props {
   canvasRef: RefObject<HTMLCanvasElement>;
-  renderCanvas: (canvasRef: RefObject<HTMLCanvasElement>) => void;
+  callback: () => RenderCanvasReturn;
 }
-export function resizeCanvasToDisplaySize(props: Props) {
-  const { canvasRef, renderCanvas } = props;
-  if (!canvasRef) return;
+
+export function resizeCanvasToDisplaySize(
+  props: Props,
+): RenderCanvasReturn | undefined {
+  const { canvasRef, callback } = props;
+  const [returnCanvas, setReturnCanvas] = useState<
+    RenderCanvasReturn | undefined
+  >();
+
   useEffect(() => {
     const canvasElement = canvasRef.current;
 
@@ -20,8 +27,9 @@ export function resizeCanvasToDisplaySize(props: Props) {
           canvasToDisplaySizeMap.get(canvasElement) || [];
         canvasElement.width = displayWidth;
         canvasElement.height = displayHeight;
-        renderCanvas(canvasRef);
+        setReturnCanvas(callback());
       };
+
       function onResize(entries: ResizeObserverEntry[]) {
         for (const entry of entries) {
           let width: number;
@@ -60,11 +68,12 @@ export function resizeCanvasToDisplaySize(props: Props) {
         }
       }
 
-      // updateCanvasSize();
       const resizeObserver = new ResizeObserver(onResize);
       resizeObserver.observe(canvasElement, { box: "content-box" });
 
       return () => resizeObserver.unobserve(canvasElement);
     }
   }, [canvasRef]);
+
+  return returnCanvas;
 }

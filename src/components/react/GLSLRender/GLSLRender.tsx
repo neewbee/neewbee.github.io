@@ -5,12 +5,20 @@ import { resizeCanvasToDisplaySize } from "./resizeCanvasToDisplaySize.ts";
 import vertexGLSL from "./demo.vertex.glsl";
 import fragmentGLSL from "./demo.fragment.glsl";
 import { randomInt, setRectangle } from "./utils.ts";
+import { useSlider } from "./useSlider.tsx";
 
 interface Props {
   code: string;
 }
 
-function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
+export type onSlideChange = (value: string) => unknown;
+
+export type RenderCanvasReturn = { onChange: onSlideChange } | undefined;
+
+function renderCanvas(
+  canvasRef: RefObject<HTMLCanvasElement>,
+  inputs: { slideValue: string },
+): RenderCanvasReturn {
   const canvas = canvasRef.current;
   if (canvas) {
     const gl = canvas.getContext("webgl");
@@ -117,36 +125,42 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
     const count = 6;
 
     // draw 50 random rectangles in random colors
-    for (let ii = 0; ii < 50; ++ii) {
-      // Setup a random rectangle
-      // This will write to positionBuffer because
-      // its the last thing we bound on the ARRAY_BUFFER
-      // bind point
-      setRectangle(
-        gl,
-        randomInt(300),
-        randomInt(300),
-        randomInt(300),
-        randomInt(300),
-      );
-
-      // Set a random color.
-      gl.uniform4f(
-        colorUniformLocation,
-        Math.random(),
-        Math.random(),
-        Math.random(),
-        1,
-      );
-
-      // Draw the rectangle.
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-    }
 
     // Fills the buffer with the values that define a rectangle.
 
     // finally !
     gl.drawArrays(gl.TRIANGLES, offset, count);
+
+    return {
+      onChange: (value: string) => {
+        console.log("call onchange");
+        for (let ii = 0; ii < 50; ++ii) {
+          // Setup a random rectangle
+          // This will write to positionBuffer because
+          // its the last thing we bound on the ARRAY_BUFFER
+          // bind point
+          setRectangle(
+            gl,
+            randomInt(300),
+            randomInt(300),
+            randomInt(300),
+            randomInt(300),
+          );
+
+          // Set a random color.
+          gl.uniform4f(
+            colorUniformLocation,
+            Math.random(),
+            Math.random(),
+            Math.random(),
+            1,
+          );
+
+          // Draw the rectangle.
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+      },
+    };
   }
 }
 
@@ -154,7 +168,15 @@ export default function (props: Props) {
   const { code } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  resizeCanvasToDisplaySize({ canvasRef, renderCanvas });
+  const { onChange } =
+    resizeCanvasToDisplaySize({
+      canvasRef,
+      callback: () => renderCanvas(canvasRef, { slideValue }),
+    }) || {};
+
+  const [slideValue, component] = useSlider({
+    onChange: onChange || (() => {}),
+  });
 
   return (
     <code>
@@ -163,6 +185,7 @@ export default function (props: Props) {
         ref={canvasRef}
         style={{ width: "100%", height: "300px", display: "block" }}
       ></canvas>
+      {component}
     </code>
   );
 }
