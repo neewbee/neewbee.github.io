@@ -1,5 +1,4 @@
 import { type RefObject, useRef } from "react";
-import { initPositionBuffer, initResolutionBuffer } from "./initBuffer.js";
 import { setPositionAttribute, setResolutionAttribute } from "./drawScene.js";
 import { initShaderProgram } from "./loadShaderProgram.ts";
 import { resizeCanvasToDisplaySize } from "./resizeCanvasToDisplaySize.ts";
@@ -46,9 +45,39 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
     console.log(
       "3. prepare the buffer data for the GLSL program we just created",
     );
-    const positionBuffer = initPositionBuffer(gl);
+    const positionBuffer = gl.createBuffer();
 
-    initResolutionBuffer(gl);
+    // quote from https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
+    //
+    // * WebGL lets us manipulate many WebGL resources on global bind points.
+    // * You can think of bind points as internal global variables inside WebGL.
+    // * First you bind a resource to a bind point.
+    // * Then, all other functions refer to the resource through the bind point.
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    // prettier-ignore
+    const positions = [
+      10, 20,
+      80, 20,
+      10, 30,
+      10, 30,
+      80, 20,
+      80, 30,
+    ];
+    // quote from https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
+    //
+    // * Now we can put data in that buffer by referencing it through the bind point
+    // * There's a lot going on here. The first thing is we have positions which is a JavaScript array.
+    // * WebGL on the other hand needs strongly typed data
+    // * so the part new Float32Array(positions) creates a new array of 32bit floating point numbers
+    // * and copies the values from positions. gl.bufferData then copies that data to the positionBuffer
+    // * on the GPU. It's using the position buffer because we bound it to the ARRAY_BUFFER bind point above.
+    // *
+    // * The last argument, gl.STATIC_DRAW is a hint to WebGL about how we'll use the data.
+    // * WebGL can try to use that hint to optimize certain things.
+    // * gl.STATIC_DRAW tells WebGL we are not likely to change this data much.
+    // *
+    // * The code up to this point is initialization code. Code that gets run once when we load the page.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     // 4. finally draw the scene
     // - reset the canvas prepare for drawing
