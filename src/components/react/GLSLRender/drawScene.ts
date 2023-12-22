@@ -1,12 +1,18 @@
 import { mat4 } from "../glMatrix/src";
-function drawScene(gl, programInfo, buffers) {
+import type { ProgramInfo } from "./GLSLRender.tsx";
+import type { Buffers } from "./initBuffer.ts";
+
+function drawScene(
+  gl: WebGLRenderingContext,
+  programInfo: ProgramInfo,
+  buffers: Buffers,
+) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
   gl.clearDepth(1.0); // Clear everything
   gl.enable(gl.DEPTH_TEST); // Enable depth testing
   gl.depthFunc(gl.LEQUAL); // Near things obscure far things
 
   // Clear the canvas before we start drawing on it.
-
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Create a perspective matrix, a special matrix that is
@@ -17,7 +23,7 @@ function drawScene(gl, programInfo, buffers) {
   // and 100 units away from the camera.
 
   const fieldOfView = (45 * Math.PI) / 180; // in radians
-  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  const aspect = gl.canvas.width / gl.canvas.height;
   const zNear = 0.1;
   const zFar = 100.0;
   const projectionMatrix = mat4.create();
@@ -47,7 +53,7 @@ function drawScene(gl, programInfo, buffers) {
 
   // Tell WebGL to use our program when drawing
 
-  gl.useProgram(programInfo.program);
+  gl.useProgram(programInfo.shaderProgram);
 
   // Set the shader uniforms
 
@@ -62,23 +68,39 @@ function drawScene(gl, programInfo, buffers) {
     modelViewMatrix,
   );
 
-  {
-    const offset = 0;
-    const vertexCount = 4;
-    gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-  }
+  const offset = 0;
+  const vertexCount = 4;
+
+  // finally !
+  gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
 }
 
 // Tell WebGL how to pull out the positions from the position
 // buffer into the vertexPosition attribute.
-function setPositionAttribute(gl, buffers, programInfo) {
+function setPositionAttribute(
+  gl: WebGLRenderingContext,
+  buffers: Buffers,
+  programInfo: ProgramInfo,
+) {
   const numComponents = 2; // pull out 2 values per iteration
   const type = gl.FLOAT; // the data in the buffer is 32bit floats
   const normalize = false; // don't normalize
-  const stride = 0; // how many bytes to get from one set of values to the next
-  // 0 = use type and numComponents above
-  const offset = 0; // how many bytes inside the buffer to start from
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+  const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+  const offset = 0; // start at the beginning of the buffer
+
+  if (!programInfo.attribLocations) return;
+  // turn the attribute on
+  gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+
+  // gl.bindBuffer in initBuffers function is to prepare the buffers
+  // gl.bindBuffer here is tell WebGL how to take data from the buffer we setup above
+  // and supply it to the attribute in the shader
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffers.positionBuffer);
+
+  //   quote from https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
+  //*  A hidden part of gl.vertexAttribPointer is that it binds the current ARRAY_BUFFER to the attribute.
+  //*  In other words now this attribute is bound to positionBuffer. That means we're free to bind something
+  //*  else to the ARRAY_BUFFER bind point. The attribute will continue to use positionBuffer.
   gl.vertexAttribPointer(
     programInfo.attribLocations.vertexPosition,
     numComponents,
@@ -87,18 +109,25 @@ function setPositionAttribute(gl, buffers, programInfo) {
     stride,
     offset,
   );
-  gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 }
 
 // Tell WebGL how to pull out the colors from the color buffer
 // into the vertexColor attribute.
-function setColorAttribute(gl, buffers, programInfo) {
+function setColorAttribute(
+  gl: WebGLRenderingContext,
+  buffers: Buffers,
+  programInfo: ProgramInfo,
+) {
   const numComponents = 4;
   const type = gl.FLOAT;
   const normalize = false;
   const stride = 0;
   const offset = 0;
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+
+  if (!programInfo.attribLocations) return;
+  gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colorBuffer);
+  if (!programInfo.attribLocations) return;
   gl.vertexAttribPointer(
     programInfo.attribLocations.vertexColor,
     numComponents,
@@ -107,7 +136,6 @@ function setColorAttribute(gl, buffers, programInfo) {
     stride,
     offset,
   );
-  gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
 }
 
 export { drawScene };
