@@ -1,15 +1,12 @@
 export type Buffers = {
   positionBuffer: WebGLBuffer | null;
-  colorBuffer: WebGLBuffer | null;
 };
 
 function initBuffers(gl: WebGLRenderingContext): Buffers {
-  const colorBuffer = initColorBuffer(gl);
   const positionBuffer = initPositionBuffer(gl);
 
   return {
     positionBuffer: positionBuffer,
-    colorBuffer: colorBuffer,
   };
 }
 
@@ -27,7 +24,7 @@ function initPositionBuffer(gl: WebGLRenderingContext) {
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
   // Now create an array of positions for the square.
-  const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
+  const positions = [0, 0, 0, 0.5, 0.7, 0];
 
   // quote from https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
   //
@@ -46,33 +43,6 @@ function initPositionBuffer(gl: WebGLRenderingContext) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
   return positionBuffer;
-}
-
-export function initColorBuffer(gl: WebGLRenderingContext) {
-  const colors = [
-    1.0,
-    1.0,
-    1.0,
-    1.0, // 白
-    1.0,
-    0.0,
-    0.0,
-    1.0, // 红
-    0.0,
-    1.0,
-    0.0,
-    1.0, // 绿
-    0.0,
-    0.0,
-    1.0,
-    1.0, // 蓝
-  ];
-
-  const colorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-  return colorBuffer;
 }
 
 export { initBuffers };

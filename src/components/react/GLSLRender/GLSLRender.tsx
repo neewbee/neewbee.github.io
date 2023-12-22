@@ -1,4 +1,4 @@
-import { type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useRef } from "react";
 import { initBuffers } from "./initBuffer.js";
 import { drawScene } from "./drawScene.js";
 import { initShaderProgram } from "./loadShaderProgram.ts";
@@ -7,15 +7,6 @@ import { resizeCanvasToDisplaySize } from "./resizeCanvasToDisplaySize.ts";
 interface Props {
   code: string;
 }
-
-export type ProgramInfo = {
-  shaderProgram: WebGLProgram;
-  attribLocations?: { vertexPosition: number; vertexColor: number };
-  uniformLocations: {
-    projectionMatrix: WebGLUniformLocation | null;
-    modelViewMatrix: WebGLUniformLocation | null;
-  };
-};
 
 function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
   const canvas = canvasRef.current;
@@ -28,56 +19,38 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
       return;
     }
 
-    const vsSource = `attribute vec4 aVertexPosition;
-attribute vec4 aVertexColor;
-
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
-
-varying lowp vec4 vColor;
-
-void main(void) {
-  gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-  vColor = aVertexColor;
+    const vsSource = `attribute vec4 a_position;
+void main() {
+  gl_Position = a_position;
 }
   `;
-    const fsSource = `varying lowp vec4 vColor;
-void main(void) {
-  gl_FragColor = vColor;
+    const fsSource = `precision mediump float;
+  void main() {
+    gl_FragColor = vec4(1, 0, 0.5, 1);
 }
   `;
 
     // 1. create the program
     // - gl.createShader -> gl.shaderSource -> gl.compileShader
     // - gl.createProgram -> gl.attachShader -> gl.linkProgram
+    console.log("1. create the program");
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-    if (!shaderProgram) return;
+    if (shaderProgram === null) return;
 
     // 2. get the attribute locations
     // * look up the location of the attribute for the program we just created
-    const programInfo: ProgramInfo = {
-      shaderProgram: shaderProgram,
-      attribLocations: {
-        // the *string* is the *attribute* in vertex shader code
-        vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-        vertexColor: gl.getAttribLocation(shaderProgram, "aVertexColor"),
-      },
-      uniformLocations: {
-        // the *string* is the *uniform* in vertex shader code
-        projectionMatrix: gl.getUniformLocation(
-          shaderProgram,
-          "uProjectionMatrix",
-        ),
-        modelViewMatrix: gl.getUniformLocation(
-          shaderProgram,
-          "uModelViewMatrix",
-        ),
-      },
-    };
+    console.log("2. get the attribute locations");
+    const attributeAPositionLocation = gl.getAttribLocation(
+      shaderProgram,
+      "a_position",
+    );
 
     // 3. prepare the buffer data for the GLSL program we just created
     // gl.createBuffer -> gl.bindBuffer -> gl.bufferData
     const buffers = initBuffers(gl);
+    console.log(
+      "3. prepare the buffer data for the GLSL program we just created",
+    );
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     //
@@ -90,7 +63,13 @@ void main(void) {
     // - useProgram (the shaderProgram created in step 1)
     // - uniformMatrix4fv
     // - Draw the scene
-    drawScene(gl, programInfo, buffers);
+    console.log("4. finally draw the scene");
+    drawScene({
+      gl,
+      buffers,
+      shaderProgram,
+      attributeAPositionLocation,
+    });
   }
 }
 
