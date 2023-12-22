@@ -11,7 +11,7 @@ function initBuffers(gl: WebGLRenderingContext): Buffers {
 }
 
 // gl.createBuffer -> gl.bindBuffer -> gl.bufferData
-function initPositionBuffer(gl: WebGLRenderingContext) {
+export function initPositionBuffer(gl: WebGLRenderingContext) {
   // Create a buffer for the square's positions.
   const positionBuffer = gl.createBuffer();
 

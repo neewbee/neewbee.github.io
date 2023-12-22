@@ -1,6 +1,6 @@
 import { type RefObject, useRef } from "react";
-import { initBuffers } from "./initBuffer.js";
-import { drawScene } from "./drawScene.js";
+import { initPositionBuffer, initResolutionBuffer } from "./initBuffer.js";
+import { setPositionAttribute, setResolutionAttribute } from "./drawScene.js";
 import { initShaderProgram } from "./loadShaderProgram.ts";
 import { resizeCanvasToDisplaySize } from "./resizeCanvasToDisplaySize.ts";
 import vertexGLSL from "./demo.vertex.glsl";
@@ -42,15 +42,17 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
 
     // 3. prepare the buffer data for the GLSL program we just created
     // gl.createBuffer -> gl.bindBuffer -> gl.bufferData
-    const buffers = initBuffers(gl);
+
     console.log(
       "3. prepare the buffer data for the GLSL program we just created",
     );
+    const positionBuffer = initPositionBuffer(gl);
 
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    //
+    initResolutionBuffer(gl);
+
     // 4. finally draw the scene
     // - reset the canvas prepare for drawing
+    // - use the program we just created
     // - enable the attribute is Step 3
     //    - enable the attribute using the attribute location we get from programInfo
     //    - bind the buffer data we created from initBuffers(gl) to gl.ARRAY_BUFFER;
@@ -59,13 +61,28 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
     // - uniformMatrix4fv
     // - Draw the scene
     console.log("4. finally draw the scene");
-    drawScene({
-      gl,
-      buffers,
-      shaderProgram,
-      attributeAPositionLocation,
-      resolutionUniformLocation,
-    });
+
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
+
+    // Clear the canvas before we start drawing on it.
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    setPositionAttribute(gl, positionBuffer, attributeAPositionLocation);
+
+    // useProgram must come before gl.uniform in setResolutionAttribute function
+    // @see https://www.khronos.org/opengl/wiki/GLSL_:_common_mistakes
+    // glUseProgram section
+    gl.useProgram(shaderProgram);
+
+    setResolutionAttribute(gl, resolutionUniformLocation);
+
+    const offset = 0;
+    const count = 6;
+
+    // finally !
+    gl.drawArrays(gl.TRIANGLES, offset, count);
   }
 }
 

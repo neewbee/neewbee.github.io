@@ -1,43 +1,8 @@
-import type { Buffers } from "./initBuffer.ts";
-
-interface Props {
-  gl: WebGLRenderingContext;
-  shaderProgram: WebGLProgram;
-  attributeAPositionLocation: number;
-  resolutionUniformLocation: WebGLUniformLocation | null;
-  buffers: Buffers;
-}
-function drawScene(props: Props) {
-  const {
-    gl,
-    shaderProgram,
-    resolutionUniformLocation,
-    attributeAPositionLocation,
-    buffers,
-  } = props;
-  gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
-
-  // Clear the canvas before we start drawing on it.
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  gl.useProgram(shaderProgram);
-
-  // buffer into the a_position attribute.
-  setPositionAttribute(gl, buffers, attributeAPositionLocation);
-  setRelosutionAttribute(gl, resolutionUniformLocation);
-
-  const offset = 0;
-  const count = 6;
-
-  // finally !
-  gl.drawArrays(gl.TRIANGLES, offset, count);
-}
-
 // Tell WebGL how to pull out the positions from the position
 // buffer into the vertexPosition attribute.
-function setPositionAttribute(
+export function setPositionAttribute(
   gl: WebGLRenderingContext,
-  buffers: Buffers,
+  positionBuffer: WebGLBuffer | null,
   attributeAPositionLocation: number,
 ) {
   const size = 2; // pull out 2 values per iteration
@@ -46,14 +11,15 @@ function setPositionAttribute(
   const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
   const offset = 0; // start at the beginning of the buffer
 
-  if (attributeAPositionLocation === undefined) return;
+  if (attributeAPositionLocation === undefined || positionBuffer === null)
+    return;
   // turn the attribute on
   gl.enableVertexAttribArray(attributeAPositionLocation);
 
   // gl.bindBuffer in initBuffers function is to prepare the buffers
   // gl.bindBuffer here is tell WebGL how to take data from the buffer we set up above
   // and supply it to the attribute in the shader
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffers.positionBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
   //   quote from https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
   //*  A hidden part of gl.vertexAttribPointer is that it binds the current ARRAY_BUFFER to the attribute.
@@ -69,7 +35,7 @@ function setPositionAttribute(
   );
 }
 
-function setRelosutionAttribute(
+export function setResolutionAttribute(
   gl: WebGLRenderingContext,
   resolutionUniformLocation: WebGLUniformLocation | null,
 ) {
@@ -78,4 +44,4 @@ function setRelosutionAttribute(
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 }
 
-export { drawScene };
+export function setColorUniformLocation() {}
