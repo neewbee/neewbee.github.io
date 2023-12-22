@@ -4,6 +4,9 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "strictNullChecks": true,
-    "allowJs": true
+    "allowJs": true,
+    "types": [
+      "vite-plugin-glsl/ext"
+    ]
   }
 }

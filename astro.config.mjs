@@ -1,6 +1,8 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
+import glsl from "vite-plugin-glsl";
+
 import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 
 import rehypePrettyCode from "rehype-pretty-code";
@@ -16,14 +18,13 @@ export default defineConfig({
     tailwind(),
     mdx(),
     react({
-      include: ['**/react/*'],
-   })
+      include: ["**/react/*"],
+    }),
   ],
   markdown: {
     syntaxHighlight: false,
     // remarkPlugins: [remarkReadingTime],
-    remarkPlugins: [
-    ],
+    remarkPlugins: [],
     rehypePlugins: [
       [
         rehypePrettyCode,
@@ -40,6 +41,28 @@ export default defineConfig({
       ],
     ],
     extendDefaultPlugins: true,
+  },
+  vite: {
+    plugins: [
+      // https://www.npmjs.com/package/vite-plugin-glsl
+      glsl({
+        include: [
+          // Glob pattern, or array of glob patterns to import
+          "**/*.glsl",
+          "**/*.wgsl",
+          "**/*.vert",
+          "**/*.frag",
+          "**/*.vs",
+          "**/*.fs",
+        ],
+        exclude: undefined, // Glob pattern, or array of glob patterns to ignore
+        warnDuplicatedImports: true, // Warn if the same chunk was imported multiple times
+        defaultExtension: "glsl", // Shader suffix when no extension is specified
+        compress: false, // Compress output shader code
+        watch: true, // Recompile shader on change
+        root: "/", // Directory for root imports
+      }),
+    ],
   },
 });
 
