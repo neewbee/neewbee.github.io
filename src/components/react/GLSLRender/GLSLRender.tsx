@@ -4,6 +4,7 @@ import { initShaderProgram } from "./loadShaderProgram.ts";
 import { resizeCanvasToDisplaySize } from "./resizeCanvasToDisplaySize.ts";
 import vertexGLSL from "./demo.vertex.glsl";
 import fragmentGLSL from "./demo.fragment.glsl";
+import { randomInt, setRectangle } from "./utils.ts";
 
 interface Props {
   code: string;
@@ -37,6 +38,11 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
     const resolutionUniformLocation = gl.getUniformLocation(
       shaderProgram,
       "u_resolution",
+    );
+
+    const colorUniformLocation = gl.getUniformLocation(
+      shaderProgram,
+      "u_color",
     );
 
     // 3. prepare the buffer data for the GLSL program we just created
@@ -109,6 +115,35 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
 
     const offset = 0;
     const count = 6;
+
+    // draw 50 random rectangles in random colors
+    for (let ii = 0; ii < 50; ++ii) {
+      // Setup a random rectangle
+      // This will write to positionBuffer because
+      // its the last thing we bound on the ARRAY_BUFFER
+      // bind point
+      setRectangle(
+        gl,
+        randomInt(300),
+        randomInt(300),
+        randomInt(300),
+        randomInt(300),
+      );
+
+      // Set a random color.
+      gl.uniform4f(
+        colorUniformLocation,
+        Math.random(),
+        Math.random(),
+        Math.random(),
+        1,
+      );
+
+      // Draw the rectangle.
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+    }
+
+    // Fills the buffer with the values that define a rectangle.
 
     // finally !
     gl.drawArrays(gl.TRIANGLES, offset, count);
