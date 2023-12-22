@@ -3,6 +3,8 @@ import { initBuffers } from "./initBuffer.js";
 import { drawScene } from "./drawScene.js";
 import { initShaderProgram } from "./loadShaderProgram.ts";
 import { resizeCanvasToDisplaySize } from "./resizeCanvasToDisplaySize.ts";
+import vertexGLSL from "./demo.vertex.glsl";
+import fragmentGLSL from "./demo.fragment.glsl";
 
 interface Props {
   code: string;
@@ -18,23 +20,11 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
       alert("无法初始化 WebGL，你的浏览器、操作系统或硬件等可能不支持 WebGL。");
       return;
     }
-
-    const vsSource = `attribute vec4 a_position;
-void main() {
-  gl_Position = a_position;
-}
-  `;
-    const fsSource = `precision mediump float;
-  void main() {
-    gl_FragColor = vec4(1, 0, 0.5, 1);
-}
-  `;
-
     // 1. create the program
     // - gl.createShader -> gl.shaderSource -> gl.compileShader
     // - gl.createProgram -> gl.attachShader -> gl.linkProgram
     console.log("1. create the program");
-    const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+    const shaderProgram = initShaderProgram(gl, vertexGLSL, fragmentGLSL);
     if (shaderProgram === null) return;
 
     // 2. get the attribute locations
@@ -43,6 +33,11 @@ void main() {
     const attributeAPositionLocation = gl.getAttribLocation(
       shaderProgram,
       "a_position",
+    );
+
+    const resolutionUniformLocation = gl.getUniformLocation(
+      shaderProgram,
+      "u_resolution",
     );
 
     // 3. prepare the buffer data for the GLSL program we just created
@@ -69,6 +64,7 @@ void main() {
       buffers,
       shaderProgram,
       attributeAPositionLocation,
+      resolutionUniformLocation,
     });
   }
 }

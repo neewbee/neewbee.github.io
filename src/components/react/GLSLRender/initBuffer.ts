@@ -6,7 +6,7 @@ function initBuffers(gl: WebGLRenderingContext): Buffers {
   const positionBuffer = initPositionBuffer(gl);
 
   return {
-    positionBuffer: positionBuffer,
+    positionBuffer,
   };
 }
 
@@ -24,8 +24,15 @@ function initPositionBuffer(gl: WebGLRenderingContext) {
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
   // Now create an array of positions for the square.
-  const positions = [0, 0, 0, 0.5, 0.7, 0];
-
+  // prettier-ignore
+  const positions = [
+    10, 20,
+    80, 20,
+    10, 30,
+    10, 30,
+    80, 20,
+    80, 30,
+  ];
   // quote from https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
   //
   // * Now we can put data in that buffer by referencing it through the bind point

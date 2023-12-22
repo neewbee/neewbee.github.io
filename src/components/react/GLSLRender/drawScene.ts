@@ -4,10 +4,17 @@ interface Props {
   gl: WebGLRenderingContext;
   shaderProgram: WebGLProgram;
   attributeAPositionLocation: number;
+  resolutionUniformLocation: WebGLUniformLocation | null;
   buffers: Buffers;
 }
 function drawScene(props: Props) {
-  const { gl, shaderProgram, attributeAPositionLocation, buffers } = props;
+  const {
+    gl,
+    shaderProgram,
+    resolutionUniformLocation,
+    attributeAPositionLocation,
+    buffers,
+  } = props;
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
 
   // Clear the canvas before we start drawing on it.
@@ -17,12 +24,13 @@ function drawScene(props: Props) {
 
   // buffer into the a_position attribute.
   setPositionAttribute(gl, buffers, attributeAPositionLocation);
+  setRelosutionAttribute(gl, resolutionUniformLocation);
 
   const offset = 0;
-  const vertexCount = 3;
+  const count = 6;
 
   // finally !
-  gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
+  gl.drawArrays(gl.TRIANGLES, offset, count);
 }
 
 // Tell WebGL how to pull out the positions from the position
@@ -59,6 +67,15 @@ function setPositionAttribute(
     stride,
     offset,
   );
+}
+
+function setRelosutionAttribute(
+  gl: WebGLRenderingContext,
+  resolutionUniformLocation: WebGLUniformLocation | null,
+) {
+  if (resolutionUniformLocation === null) return;
+
+  gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 }
 
 export { drawScene };
