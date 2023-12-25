@@ -1,11 +1,10 @@
-import { type RefObject, useRef } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import { setPositionAttribute, setResolutionAttribute } from "./drawScene.js";
 import { initShaderProgram } from "./loadShaderProgram.ts";
-import { resizeCanvasToDisplaySize } from "./resizeCanvasToDisplaySize.ts";
 import vertexGLSL from "./demo.vertex.glsl";
 import fragmentGLSL from "./demo.fragment.glsl";
 import { randomInt, setRectangle } from "./utils.ts";
-import { useSlider } from "./useSlider.tsx";
+import { Slider } from "./Slider.tsx";
 
 interface Props {
   code: string;
@@ -15,9 +14,9 @@ export type onSlideChange = (value: string) => unknown;
 
 export type RenderCanvasReturn = { onChange: onSlideChange } | undefined;
 
-function renderCanvas(
+export function renderCanvas(
   canvasRef: RefObject<HTMLCanvasElement>,
-  inputs: { slideValue: string },
+  inputs?: { slideValue: string },
 ): RenderCanvasReturn {
   const canvas = canvasRef.current;
   if (canvas) {
@@ -166,17 +165,63 @@ function renderCanvas(
 
 export default function (props: Props) {
   const { code } = props;
+  const [slideValue, setSlideValue] = useState("0");
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const renderCallbackRef = useRef<{ onChange: onSlideChange }>();
 
-  const { onChange } =
-    resizeCanvasToDisplaySize({
-      canvasRef,
-      callback: () => renderCanvas(canvasRef, { slideValue }),
-    }) || {};
+  useEffect(() => {
+    const canvasElement = canvasRef.current;
 
-  const [slideValue, component] = useSlider({
-    onChange: onChange || (() => {}),
-  });
+    if (canvasElement) {
+      function onResize(entries: ResizeObserverEntry[]) {
+        for (const entry of entries) {
+          let width: number;
+          let height: number;
+          let dpr = window.devicePixelRatio;
+          if (entry.devicePixelContentBoxSize) {
+            // NOTE: Only this path gives the correct answer
+            // The other paths are an imperfect fallback
+            // for browsers that don't provide anyway to do this
+            width = entry.devicePixelContentBoxSize[0].inlineSize;
+            height = entry.devicePixelContentBoxSize[0].blockSize;
+            dpr = 1; // it's already in width and height
+          } else if (entry.contentBoxSize) {
+            if (entry.contentBoxSize[0]) {
+              width = entry.contentBoxSize[0].inlineSize;
+              height = entry.contentBoxSize[0].blockSize;
+            } else {
+              // legacy
+              // @ts-ignore
+              width = entry.contentBoxSize.inlineSize;
+              // @ts-ignore
+              height = entry.contentBoxSize.blockSize;
+            }
+          } else {
+            // legacy
+            width = entry.contentRect.width;
+            height = entry.contentRect.height;
+          }
+          const displayWidth = Math.round(width * dpr);
+          const displayHeight = Math.round(height * dpr);
+
+          if (canvasElement) {
+            canvasElement.width = displayWidth;
+            canvasElement.height = displayHeight;
+            renderCallbackRef.current = renderCanvas(canvasRef);
+          }
+        }
+      }
+
+      const resizeObserver = new ResizeObserver(onResize);
+
+      resizeObserver.observe(canvasElement, { box: "content-box" });
+
+      return () => {
+        resizeObserver.unobserve(canvasElement);
+      };
+    }
+  }, [canvasRef, renderCallbackRef]);
 
   return (
     <code>
@@ -185,7 +230,13 @@ export default function (props: Props) {
         ref={canvasRef}
         style={{ width: "100%", height: "300px", display: "block" }}
       ></canvas>
-      {component}
+      <Slider
+        value={slideValue}
+        onChange={(value) => {
+          renderCallbackRef.current?.onChange(value);
+          setSlideValue(value);
+        }}
+      />
     </code>
   );
 }
