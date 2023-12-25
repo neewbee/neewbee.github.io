@@ -1,16 +1,23 @@
-import { type RefObject, useRef } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import { setPositionAttribute, setResolutionAttribute } from "./drawScene.js";
 import { initShaderProgram } from "./loadShaderProgram.ts";
-import { resizeCanvasToDisplaySize } from "./resizeCanvasToDisplaySize.ts";
 import vertexGLSL from "./demo.vertex.glsl";
 import fragmentGLSL from "./demo.fragment.glsl";
 import { randomInt, setRectangle } from "./utils.ts";
+import { Slider } from "./Slider.tsx";
 
 interface Props {
   code: string;
 }
 
-function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
+export type onSlideChange = (value: string) => unknown;
+
+export type RenderCanvasReturn = { onChange: onSlideChange } | undefined;
+
+export function renderCanvas(
+  canvasRef: RefObject<HTMLCanvasElement>,
+  inputs?: { slideValue: string },
+): RenderCanvasReturn {
   const canvas = canvasRef.current;
   if (canvas) {
     const gl = canvas.getContext("webgl");
@@ -117,44 +124,104 @@ function renderCanvas(canvasRef: RefObject<HTMLCanvasElement>) {
     const count = 6;
 
     // draw 50 random rectangles in random colors
-    for (let ii = 0; ii < 50; ++ii) {
-      // Setup a random rectangle
-      // This will write to positionBuffer because
-      // its the last thing we bound on the ARRAY_BUFFER
-      // bind point
-      setRectangle(
-        gl,
-        randomInt(300),
-        randomInt(300),
-        randomInt(300),
-        randomInt(300),
-      );
-
-      // Set a random color.
-      gl.uniform4f(
-        colorUniformLocation,
-        Math.random(),
-        Math.random(),
-        Math.random(),
-        1,
-      );
-
-      // Draw the rectangle.
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-    }
 
     // Fills the buffer with the values that define a rectangle.
 
     // finally !
     gl.drawArrays(gl.TRIANGLES, offset, count);
+
+    return {
+      onChange: (value: string) => {
+        console.log("call onchange");
+        for (let ii = 0; ii < 50; ++ii) {
+          // Setup a random rectangle
+          // This will write to positionBuffer because
+          // its the last thing we bound on the ARRAY_BUFFER
+          // bind point
+          setRectangle(
+            gl,
+            randomInt(300),
+            randomInt(300),
+            randomInt(300),
+            randomInt(300),
+          );
+
+          // Set a random color.
+          gl.uniform4f(
+            colorUniformLocation,
+            Math.random(),
+            Math.random(),
+            Math.random(),
+            1,
+          );
+
+          // Draw the rectangle.
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+      },
+    };
   }
 }
 
 export default function (props: Props) {
   const { code } = props;
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [slideValue, setSlideValue] = useState("0");
 
-  resizeCanvasToDisplaySize({ canvasRef, renderCanvas });
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const renderCallbackRef = useRef<{ onChange: onSlideChange }>();
+
+  useEffect(() => {
+    const canvasElement = canvasRef.current;
+
+    if (canvasElement) {
+      function onResize(entries: ResizeObserverEntry[]) {
+        for (const entry of entries) {
+          let width: number;
+          let height: number;
+          let dpr = window.devicePixelRatio;
+          if (entry.devicePixelContentBoxSize) {
+            // NOTE: Only this path gives the correct answer
+            // The other paths are an imperfect fallback
+            // for browsers that don't provide anyway to do this
+            width = entry.devicePixelContentBoxSize[0].inlineSize;
+            height = entry.devicePixelContentBoxSize[0].blockSize;
+            dpr = 1; // it's already in width and height
+          } else if (entry.contentBoxSize) {
+            if (entry.contentBoxSize[0]) {
+              width = entry.contentBoxSize[0].inlineSize;
+              height = entry.contentBoxSize[0].blockSize;
+            } else {
+              // legacy
+              // @ts-ignore
+              width = entry.contentBoxSize.inlineSize;
+              // @ts-ignore
+              height = entry.contentBoxSize.blockSize;
+            }
+          } else {
+            // legacy
+            width = entry.contentRect.width;
+            height = entry.contentRect.height;
+          }
+          const displayWidth = Math.round(width * dpr);
+          const displayHeight = Math.round(height * dpr);
+
+          if (canvasElement) {
+            canvasElement.width = displayWidth;
+            canvasElement.height = displayHeight;
+            renderCallbackRef.current = renderCanvas(canvasRef);
+          }
+        }
+      }
+
+      const resizeObserver = new ResizeObserver(onResize);
+
+      resizeObserver.observe(canvasElement, { box: "content-box" });
+
+      return () => {
+        resizeObserver.unobserve(canvasElement);
+      };
+    }
+  }, [canvasRef, renderCallbackRef]);
 
   return (
     <code>
@@ -163,6 +230,13 @@ export default function (props: Props) {
         ref={canvasRef}
         style={{ width: "100%", height: "300px", display: "block" }}
       ></canvas>
+      <Slider
+        value={slideValue}
+        onChange={(value) => {
+          renderCallbackRef.current?.onChange(value);
+          setSlideValue(value);
+        }}
+      />
     </code>
   );
 }
