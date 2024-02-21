@@ -133,15 +133,15 @@ export function renderCanvas(
     return {
       onChange: (value: string) => {
         console.log("call onchange");
-        for (let ii = 0; ii < 50; ++ii) {
+        for (let ii = 0; ii < 20; ++ii) {
           // Setup a random rectangle
           // This will write to positionBuffer because
           // its the last thing we bound on the ARRAY_BUFFER
           // bind point
           setRectangle(
             gl,
-            randomInt(300),
-            randomInt(300),
+            randomInt(1000),
+            randomInt(500),
             randomInt(300),
             randomInt(300),
           );
@@ -224,7 +224,7 @@ export default function (props: Props) {
   }, [canvasRef, renderCallbackRef]);
 
   return (
-    <code>
+    <div>
       <pre>{code}</pre>
       <canvas
         ref={canvasRef}
@@ -237,6 +237,6 @@ export default function (props: Props) {
           setSlideValue(value);
         }}
       />
-    </code>
+    </div>
   );
 }

@@ -1,8 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header/Header";
+import SparkleButton from "../components/SparkleButton/SparkleButton";
 ---
 
 <Layout>
+  <Header />
+  <div class="absolute top-10 right-10">
+    <SparkleButton client:only="react" />
+  </div>
   <main class="flex flex-col justify-center items-center h-screen">
     <div class="justify-center items-center dark:text-slate-400">
       Hi, my name is stephen
