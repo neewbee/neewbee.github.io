@@ -32,8 +32,8 @@ export default function SparkleButton() {
   // }, [particalsContainer]);
 
   return (
-    <div className="sparkle-button">
-      <button>
+    <div className="sparkle-button-container">
+      <button className="sparkle-button">
         <span className="spark"></span>
         <span className="backdrop"></span>
         <svg
@@ -66,7 +66,7 @@ export default function SparkleButton() {
         </svg>
         <span className="text">联系我</span>
       </button>
-      <div className="bodydrop"></div>
+      {/*<div className="bodydrop"></div>*/}
       {/*<span*/}
       {/*  aria-hidden="true"*/}
       {/*  className="particle-pen"*/}
