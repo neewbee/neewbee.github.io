@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <div>
+    <div className="w-full">
       <ul className="flex flex-row items-center max-w-full justify-evenly dark:text-white text-black my-5">
         <li className="hover:bg-sky-700">
           <a href="/">Home</a>
