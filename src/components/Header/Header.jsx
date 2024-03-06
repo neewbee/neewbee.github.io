@@ -1,11 +1,19 @@
 export default function Header() {
   return (
     <div>
-      <ul className="flex flex-row items-center max-w-full justify-evenly text-white my-5">
-        <li className="hover:text-white ">Home</li>
-        <li className="hover:bg-sky-700 ">Experiments</li>
-        <li className="hover:bg-sky-700  ">blogs</li>
-        <li className="hover:bg-sky-700  ">About Me</li>
+      <ul className="flex flex-row items-center max-w-full justify-evenly dark:text-white text-black my-5">
+        <li className="hover:bg-sky-700">
+          <a href="/">Home</a>
+        </li>
+        <li className="hover:bg-sky-700 hover:cursor-pointer">
+          <a href="/experiments">Experiments</a>
+        </li>
+        <li className="hover:bg-sky-700 hover:cursor-pointer">
+          <a href="/blog">blog</a>
+        </li>
+        <li className="hover:bg-sky-700 hover:cursor-pointer">
+          <a href="/about-me">About Me</a>
+        </li>
       </ul>
     </div>
   );

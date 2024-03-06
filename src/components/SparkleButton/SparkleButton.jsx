@@ -64,7 +64,7 @@ export default function SparkleButton() {
             strokeLinejoin="round"
           />
         </svg>
-        <span className="text">联系我</span>
+        <span className="text">Contact Me</span>
       </button>
       {/*<div className="bodydrop"></div>*/}
       {/*<span*/}
