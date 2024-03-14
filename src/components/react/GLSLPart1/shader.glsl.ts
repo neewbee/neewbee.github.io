@@ -1,35 +1,53 @@
-const glsl = ` varying vec2 vUv;
+const glsl = `
+/* This animation is the material of my first youtube tutorial about creative
+   coding, which is a video in which I try to introduce programmers to GLSL
+   and to the wonderful world of shaders, while also trying to share my recent
+   passion for this community.
+                                       Video URL: https://youtu.be/f4s1h2YETNY
+*/
 
-   uniform float time;
+uniform vec2 u_resolution;
+uniform float u_time;
+varying vec2 vUv;
 
-   void main() {
 
-    vec2 p = - 1.0 + 2.0 * vUv;
-    float a = time * 40.0;
-    float d, e, f, g = 1.0 / 40.0 ,h ,i ,r ,q;
+//https://iquilezles.org/articles/palettes/
+vec3 palette( float t ) {
+    vec3 a = vec3(0.5, 0.5, 0.5);
+    vec3 b = vec3(0.5, 0.5, 0.5);
+    vec3 c = vec3(1.0, 1.0, 1.0);
+    vec3 d = vec3(0.263,0.416,0.557);
 
-    e = 400.0 * ( p.x * 0.5 + 0.5 );
-    f = 400.0 * ( p.y * 0.5 + 0.5 );
-    i = 200.0 + sin( e * g + a / 150.0 ) * 20.0;
-    d = 200.0 + cos( f * g / 2.0 ) * 18.0 + cos( e * g ) * 7.0;
-    r = sqrt( pow( abs( i - e ), 2.0 ) + pow( abs( d - f ), 2.0 ) );
-    q = f / r;
-    e = ( r * cos( q ) ) - a / 2.0;
-    f = ( r * sin( q ) ) - a / 2.0;
-    d = sin( e * g ) * 176.0 + sin( e * g ) * 164.0 + r;
-    h = ( ( f + d ) + a / 2.0 ) * g;
-    i = cos( h + r * p.x / 1.3 ) * ( e + e + a ) + cos( q * g * 6.0 ) * ( r + h / 3.0 );
-    h = sin( f * g ) * 144.0 - sin( e * g ) * 212.0 * p.x;
-    h = ( h + ( f - e ) * q + sin( r - ( a + h ) / 7.0 ) * 10.0 + i / 4.0 ) * g;
-    i += cos( h * 2.3 * sin( a / 350.0 - q ) ) * 184.0 * sin( q - ( r * 4.3 + a / 12.0 ) * g ) + tan( r * g + h ) * 184.0 * cos( r * g + h );
-    i = mod( i / 5.6, 256.0 ) / 64.0;
-    if ( i < 0.0 ) i += 4.0;
-    if ( i >= 2.0 ) i = 4.0 - i;
-    d = r / 350.0;
-    d += sin( d * d * 8.0 ) * 0.52;
-    f = ( sin( a * g ) + 1.0 ) / 2.0;
-    gl_FragColor = vec4( vec3( f * i / 1.6, i / 2.0 + d / 13.0, i ) * d * p.x + vec3( i / 1.3 + d / 8.0, i / 2.0 + d / 18.0, i ) * d * ( 1.0 - p.x ), 1.0 );
-  }
+    return a + b*cos( 6.28318*(c*t+d) );
+}
+
+//https://www.shadertoy.com/view/mtyGWy
+void main() {
+
+    // vec2 uv = gl_FragCoord.xy / u_resolution * 2.0 - 1.0;
+    vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
+
+    vec2 uv0 = uv;
+    vec3 finalColor = vec3(0.0);
+
+    for (float i = 0.0; i < 4.0; i++) {
+        uv = fract(uv * 1.5) - 0.5;
+
+        float d = length(uv) * exp(-length(uv0));
+
+        vec3 col = palette(length(uv0) + i*.4 + u_time*.4);
+
+        d = sin(d*8. + u_time)/8.;
+        d = abs(d);
+
+        d = pow(0.01 / d, 1.2);
+
+        finalColor += col * d;
+    }
+
+
+    gl_FragColor = vec4(finalColor, 1.0);
+}
 `;
 
 export default glsl;

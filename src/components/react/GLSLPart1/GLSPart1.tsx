@@ -6,6 +6,8 @@ import vertexInitialCode from "./vertex.glsl.ts";
 import GLSLRender from "../GLSLRender/GLSLRender.tsx";
 import * as THREE from "three";
 import { useEffect, useRef } from "react";
+import resolveConfig from "tailwindcss/resolveConfig";
+const clock = new THREE.Clock();
 
 export default function () {
   const [shaderCode, setShaderCode] = React.useState(shaderInitialCode);
@@ -17,7 +19,7 @@ export default function () {
     if (!containerRef && !containerRef.current) return;
     let camera, scene, renderer;
 
-    let uniforms;
+    let uniforms, material;
 
     init();
     animate();
@@ -32,10 +34,11 @@ export default function () {
       const geometry = new THREE.PlaneGeometry(2, 2);
 
       uniforms = {
-        time: { value: 1.0 },
+        u_resolution: { value: { x: null, y: null } },
+        u_time: { value: null },
       };
 
-      const material = new THREE.ShaderMaterial({
+      material = new THREE.ShaderMaterial({
         uniforms: uniforms,
         vertexShader: vertexCode,
         fragmentShader: shaderCode,
@@ -46,26 +49,51 @@ export default function () {
 
       renderer = new THREE.WebGLRenderer();
       renderer.setPixelRatio(window.devicePixelRatio);
+      var DPR = window.devicePixelRatio ? window.devicePixelRatio : 1;
+
       renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setViewport(
+        0,
+        0,
+        container.clientWidth * 2,
+        container.clientHeight * 2,
+      );
+
       container.appendChild(renderer.domElement);
 
       window.addEventListener("resize", onWindowResize);
     }
 
     function onWindowResize() {
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(
+        containerRef.current.clientWidth,
+        containerRef.current.clientHeight,
+      );
+      if (uniforms.u_resolution !== undefined) {
+        uniforms.u_resolution.value.x = containerRef.current.clientWidth * 2;
+        uniforms.u_resolution.value.y = containerRef.current.clientHeight * 2;
+        console.log("uniforms", uniforms);
+      }
     }
 
     //
 
     function animate() {
       requestAnimationFrame(animate);
+      uniforms.u_time.value = clock.getElapsedTime();
 
-      uniforms["time"].value = performance.now() / 1000;
-
+      if (uniforms.u_resolution !== undefined) {
+        uniforms.u_resolution.value.x =
+          containerRef.current.clientWidth * window.devicePixelRatio;
+        uniforms.u_resolution.value.y =
+          containerRef.current.clientHeight * window.devicePixelRatio;
+      }
       renderer.render(scene, camera);
     }
-    return () => containerRef.current.removeChild(renderer.domElement);
+    return () => {
+      renderer.dispose();
+      containerRef.current.removeChild(renderer.domElement);
+    };
   }, [containerRef, shaderCode, vertexCode]);
   return (
     <div className={"w-full text-xs"}>
@@ -77,7 +105,7 @@ export default function () {
       <div
         ref={containerRef}
         className="w-full"
-        style={{ height: "300px" }}
+        style={{ height: "600px" }}
       ></div>
     </div>
   );
