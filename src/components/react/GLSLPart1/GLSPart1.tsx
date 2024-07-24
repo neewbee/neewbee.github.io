@@ -50,7 +50,6 @@ export default function () {
       renderer = new THREE.WebGLRenderer();
       renderer.setPixelRatio(window.devicePixelRatio);
       var DPR = window.devicePixelRatio ? window.devicePixelRatio : 1;
-
       renderer.setSize(container.clientWidth, container.clientHeight);
       renderer.setViewport(
         0,
@@ -97,8 +96,12 @@ export default function () {
   }, [containerRef, shaderCode, vertexCode]);
   return (
     <div className={"w-full text-xs"}>
+      <p>
+        在学习前端可视化的过程中，除了线性代数之外，有一个很有意思的主题就是
+        shader。你可以更改下面的代码来查看不同的效果
+      </p>
       <Editor code={shaderCode} onChange={setShaderCode}></Editor>
-      <Editor code={vertexCode} onChange={setVertexCode}></Editor>
+      {/*<Editor code={vertexCode} onChange={setVertexCode}></Editor>*/}
       {/*<div className="prose dark:prose-invert prose-slate">*/}
       {/*  <GLSLRender code={shaderCode}></GLSLRender>*/}
       {/*</div>*/}

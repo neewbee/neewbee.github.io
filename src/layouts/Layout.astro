@@ -15,7 +15,7 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link href="/public/output.css" rel="stylesheet" />
+    <link href="/output.css" rel="stylesheet" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <style></style>
@@ -26,6 +26,7 @@ const { title } = Astro.props;
       <div
         class="max-w-3xl m-auto w-11/12 font-mono dark:text-white text-l text-black flex flex-col items-center"
       >
+        Layout.astro
         <slot />
       </div>
     </div>

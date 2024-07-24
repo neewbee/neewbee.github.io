@@ -18,9 +18,18 @@ const shadersCollection = defineCollection({
 
 const authorsCollection = defineCollection({
   type: "data",
+  schema: z.array(
+    z.object({
+      name: z.string(),
+      jobTitle: z.string(),
+    }),
+  ),
+});
+
+const experimentsCollection = defineCollection({
+  type: "content",
   schema: z.object({
-    name: z.string(),
-    jobTitle: z.string(),
+    title: z.string(),
   }),
 });
 
@@ -28,4 +37,5 @@ export const collections = {
   blogs: blogCollection,
   shaders: shadersCollection,
   authors: authorsCollection,
+  experiments: experimentsCollection,
 };

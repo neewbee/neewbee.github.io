@@ -1,0 +1,15 @@
+```tsx showLineNumbers
+const { gl, scene, camera } = state;
+//  render the scene without the *glass*
+mesh.current.visible = false;
+gl.setRenderTarget(mainRenderTarget);
+// and save the render data
+gl.render(scene, camera);
+
+// pass the image data to *glass* mesh shader and calculate the final color output
+mesh.current.material.uniforms.uTexture.value = mainRenderTarget.texture;
+
+gl.setRenderTarget(null);
+// render the *glass*
+mesh.current.visible = true;
+```

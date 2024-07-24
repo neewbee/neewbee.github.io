@@ -1,0 +1,111 @@
+---
+title: refraction and despersion in three js
+tags: ["refraction", "dispersion", "three.js"]
+images: blog  2
+---
+
+import Editor from "../../../components/react/CodeMirror/Editor";
+import Layout from "../../../layouts/Layout.astro";
+import P1code from "./p1.code.mdx";
+import DispersionCode from "./dispersion.code.mdx";
+import MultipleSampleCode from "./multipul-sample.code.mdx";
+
+<div class="w-full">
+  <p className="prose dark:prose-invert prose-slate flex flex-row items-center">
+    For a long time, I am very curious about Three.js, WebGL. But, it always
+    feel overwhelming to me. I have tried
+    <a href="https://webglfundamentals.org/">WebGL Fundamentals</a> before, but somehow
+    I didn't manage to insist! Cause there are always some area that I could not
+    understand. Mainly, linear algebra.
+  </p>
+  <img src="/refraction-and-dispersion-in-three-js/twitter-01.png" alt=""/>
+  <p>
+    About a year ago, I see some very impressive demos on twitter
+    <figure>
+      <video src="/refraction-and-dispersion-in-three-js/demo-01.mp4" autoPlay={true} loop={true}
+             className='w-2/6 my-2 mx-auto'></video>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        <a
+          href="https://x.com/Damian_Kidd/status/1698675519523365090">https://x.com/Damian_Kidd/status/1698675519523365090</a>
+      </figcaption>
+    </figure>
+    but this is a C4D project. later the author of R3F posted a demo
+    <figure>
+      <video src="/refraction-and-dispersion-in-three-js/demo-02.mp4" autoPlay={true} loop={true}
+             className='w-2/6 my-2 mx-auto'></video>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        <a
+          href="https://x.com/0xca0a/status/1698798813517942924">https://x.com/Damian_Kidd/status/1698675519523365090</a>
+      </figcaption>
+    </figure>
+    which blows my mind! I begin to dig into the source code. Soon I realise, I have to learn the fundamentals of WebGL.
+    So I decided to
+    give it try, AGAIN! I followed <a href="https://webglfundamentals.org/">WebGL Fundamentals</a>
+    articles, typed all the code. After reading "2D translation, rotation, scale, matrix math",
+    I decide to pick up Linear Algebra. Luckily there are tons of learning materials
+    about linear algebra.
+    <a href="https://textbooks.math.gatech.edu/ila/index.html">textbooks.math.gatech.edu</a>
+    and
+    <a href="https://immersivemath.com/ila/index.html">immersivemath</a>
+    are both excellent website! I often refer to another website when I feel
+    confused. After about a month. I thought I am ready to continue my WebGL fundamental
+    journey, so I start to read the r3f source code. After lots of ChatGPTing and googling I decide to write and
+    article. Maybe this will give me a better understanding.
+
+    > Teaching is the highest form of understanding
+
+    <h2>The most simple case 2d refraction</h2>
+
+    Considering there is a 2d plan and a background. what will it look like when look through the 2d plan?
+    The first thing comes in mind is refraction. Light will bend when traveling through a different material.
+
+    <image class='m-auto' src='/refraction-and-dispersion-in-three-js/refraction.svg'></image>
+
+    This is a great article witten by <a href="https://blog.maximeheckel.com/">Maxime</a>
+    You can play this demo by click the link in the description.
+    There are only a glass and a object. So , how do we solve this. Simple!
+
+    - render the scene without the *\*glass\** and save the render data
+    - pass the image data to *\*glass\** mesh shader and calculate the final color output
+    - render the *glass*
+
+    <figure>
+      <image src="/refraction-and-dispersion-in-three-js/dispersion-effect.png"
+             className='w-4/4 my-2 mx-auto'></image>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        https://neewbee.github.io/dispersion-effect/ (final result)
+      </figcaption>
+    </figure>
+
+    here is the code snippet taken from <a href="https://blog.maximeheckel.com/">Maxime</a>
+    <P1code></P1code>
+
+    step 1 and step 3 is easy to understand.
+    step 2 is where the magic happens. After applying the refraction effect in shaders, you can see that we have a
+    refraction effect.
+    <image class='m-auto' src='/refraction-and-dispersion-in-three-js/step-1.0.png'></image>
+    The next step is to make this more realistic. What we could do includes:
+
+    <h3>dispersion</h3>
+    Because white light is a combination of all colors in the color spectrum. So in fragment shader, calculate each RGB
+    channel
+    with different IOR.
+    <image class='m-auto' src='/refraction-and-dispersion-in-three-js/dispersion.png'></image>
+    <DispersionCode></DispersionCode>
+    <h3>multiple sampling</h3>
+    In real life, light is a contains all wavelengths of light in a certain range, but we only use RGB. So to make it
+    more realistic, make a loop, and in each loop, and an offset so the output looks <i>smooth</i>
+    <MultipleSampleCode></MultipleSampleCode>
+    <h2>3d world</h2>
+    In 3d word, there are other things you need to consider:
+    firstly, refraction will happen at least two times. In and Out. So we
+    need to sample two times,
+    the <i> THREE.FrontSide.</i> and the <i>THREE.BackSide</i>.
+    secondly, light attenuates when it propagates through a transparent medium.
+    thirdly, there are reflection and diffuse.
+    last but not least, there are a major flaw. What if there are two transparent object stacked together?
+
+    <h3>backface</h3>
+
+  </p>
+</div>

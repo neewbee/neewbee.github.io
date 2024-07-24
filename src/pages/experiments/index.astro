@@ -2,12 +2,11 @@
 import { getCollection, getEntries } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 
-const blogEntries = await getCollection("blog");
+const blogEntries = await getCollection("experiments");
 ---
 
 <Layout>
   <div class="flex items-start flex-col">
-    /blog/index.astro
     {blogEntries.map((p) => <a href={`/blog/${p.slug}`}>{p.data.title}</a>)}
   </div>
 </Layout>
