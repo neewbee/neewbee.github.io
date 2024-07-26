@@ -6,8 +6,7 @@ const blogEntries = await getCollection("blog");
 ---
 
 <Layout>
-  <div class="flex items-start flex-col">
-    /blog/index.astro
+  <div class="flex items-start flex-col mt-5">
     {blogEntries.map((p) => <a href={`/blog/${p.slug}`}>{p.data.title}</a>)}
   </div>
 </Layout>
