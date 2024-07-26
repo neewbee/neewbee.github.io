@@ -1,12 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Pixelate from "../components/Pixelate/Pixelate";
+import img from "./WechatIMG299.jpg";
 ---
 
 <Layout title="About Me">
   <main
-    class="flex flex-col justify-center items-start flex-1 dark:text-white text-l text-black"
+    class="m-auto w-full font-mono dark:text-white text-l text-black flex flex-col items-center"
   >
-    <div class="">
+    <Pixelate
+      style={{ margin: "100px auto" }}
+      client:only="react"
+      width="200"
+      height="200"
+      src={img.src}
+    />
+    <div>
       <p class="mt-32">
         I am an experienced senior front-end developer with 8 years of expertise
         in the field, ranging from jQuery to Backbone.js, React, and Vue. My

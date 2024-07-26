@@ -1,9 +1,9 @@
-import { defineConfig } from "astro/config";
+import {defineConfig} from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
 import glsl from "vite-plugin-glsl";
 
-import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
+import {remarkReadingTime} from "./src/utils/remark-reading-time.mjs";
 
 import rehypePrettyCode from "rehype-pretty-code";
 
@@ -15,7 +15,9 @@ import react from "@astrojs/react";
 // https://astro.build/config
 export default defineConfig({
   integrations: [
-    tailwind(),
+    tailwind({
+      applyBaseStyles: true,
+    }),
     mdx(),
     react({
       include: ["**/react/*"],
@@ -31,7 +33,6 @@ export default defineConfig({
         {
           theme: "dracula",
           onVisitHighlightedLine(node) {
-            console.log("node", node);
             // node.properties.className.push('highlighted');
           },
           onVisitHighlightedWord(node) {

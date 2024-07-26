@@ -7,9 +7,6 @@ import colors from "tailwindcss/colors";
 const linkHeadingStyles = {
   color: colors.gray[100],
   borderBottomColor: "transparent",
-  "&:hover": {
-    color: `${colors.gray[900]}`,
-  },
 };
 
 const hexToRgb = (hex) => {
@@ -103,14 +100,13 @@ export default {
             },
             a: {
               textDecoration: "none",
-              borderBottom: `2px solid ${colors.cyan[800]}`,
               color: colors.cyan[400],
               transition:
                 "color 0.2s ease, border-color 0.2s ease, background 0.2s ease",
               "&:hover": {
                 color: `${colors.zinc[900]} !important`,
                 borderBottomColor: `${colors.cyan[200]} !important`,
-                background: colors.cyan[200],
+                background: "transparent",
               },
             },
             "pre code": {

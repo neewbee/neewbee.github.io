@@ -5,7 +5,7 @@ import Layout from "../../layouts/Layout.astro";
 const blogEntries = await getCollection("blog");
 ---
 
-<Layout>
+<Layout title="blog">
   <div class="flex items-start flex-col mt-5">
     {blogEntries.map((p) => <a href={`/blog/${p.slug}`}>{p.data.title}</a>)}
   </div>

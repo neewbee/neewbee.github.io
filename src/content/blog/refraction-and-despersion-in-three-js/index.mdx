@@ -19,19 +19,17 @@ import MultipleSampleCode from "./multipul-sample.code.mdx";
     About a year ago, I see some very impressive demos on Twitter.
     <figure>
       <video src="/refraction-and-dispersion-in-three-js/demo-01.mp4" autoPlay={true} loop={true}
-             className='w-2/6 my-2 mx-auto'></video>
-      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
-        <a
-          href="https://x.com/Damian_Kidd/status/1698675519523365090">https://x.com/Damian_Kidd/status/1698675519523365090</a>
+             className=' my-2 mx-auto'></video>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400 break-all">
+        https://x.com/Damian_Kidd/status/1698675519523365090
       </figcaption>
     </figure>
     This was a C4D project. Later, the author of R3F posted a demo that blew my mind.
     <figure>
       <video src="/refraction-and-dispersion-in-three-js/demo-02.mp4" autoPlay={true} loop={true}
-             className='w-2/6 my-2 mx-auto'></video>
-      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
-        <a
-          href="https://x.com/0xca0a/status/1698798813517942924">https://x.com/Damian_Kidd/status/1698675519523365090</a>
+             className='my-2 mx-auto'></video>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400 break-all">
+        https://x.com/0xca0a/status/1698798813517942924
       </figcaption>
     </figure>
     I began to dig into the source code and soon realized I had to learn the fundamentals of WebGL. So I decided to give
@@ -56,7 +54,7 @@ import MultipleSampleCode from "./multipul-sample.code.mdx";
     This is a great article written by <a href="https://blog.maximeheckel.com/">Maxime</a>. You can play this demo by
     clicking the link in the description. There are only a glass and an object. So, how do we solve this? Simple!
 
-    - render the scene without the \*glass\* and save the render data
+    - render the scene without the *glass* and save the render data
     - pass the image data to *glass* mesh shader and calculate the final color output
     - render the *glass*
 
