@@ -1,0 +1,14 @@
+---
+import { getCollection, getEntries } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+const blogEntries = await getCollection("experiments");
+---
+
+<Layout>
+  <div class="flex items-start flex-col mt-5">
+    <a href="https://neewbee.github.io/r3f-drei-sticker-demo/"
+      >r3f drei sticker</a
+    >
+  </div>
+</Layout>

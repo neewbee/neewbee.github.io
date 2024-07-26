@@ -1,21 +1,53 @@
-const glsl = `uniform float u_slider;
+const glsl = `
+/* This animation is the material of my first youtube tutorial about creative
+   coding, which is a video in which I try to introduce programmers to GLSL
+   and to the wonderful world of shaders, while also trying to share my recent
+   passion for this community.
+                                       Video URL: https://youtu.be/f4s1h2YETNY
+*/
+
+uniform vec2 u_resolution;
+uniform float u_time;
 varying vec2 vUv;
 
+
+//https://iquilezles.org/articles/palettes/
+vec3 palette( float t ) {
+    vec3 a = vec3(0.5, 0.5, 0.5);
+    vec3 b = vec3(0.5, 0.5, 0.5);
+    vec3 c = vec3(1.0, 1.0, 1.0);
+    vec3 d = vec3(0.263,0.416,0.557);
+
+    return a + b*cos( 6.28318*(c*t+d) );
+}
+
+//https://www.shadertoy.com/view/mtyGWy
 void main() {
-    vec2 st = vUv;
 
-    // Distance of the current pixel to the center of the canvas
-    float d = distance(st, vec2(0.5));
+    // vec2 uv = gl_FragCoord.xy / u_resolution * 2.0 - 1.0;
+    vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
 
-    // Using step to get a sharp circle
-    // s = 1 if d > 0.25, 0 otherwise
-    float s = step(0.25, d);
+    vec2 uv0 = uv;
+    vec3 finalColor = vec3(0.0);
 
-    // Mix the two colors based on the slider
-    // color = u_slider * s + (1-u_slider) * d
-    float brightness = mix(d, s, u_slider);
+    for (float i = 0.0; i < 4.0; i++) {
+        uv = fract(uv * 1.5) - 0.5;
 
-    gl_FragColor = vec4(vec3(brightness), 1.0);
-}`;
+        float d = length(uv) * exp(-length(uv0));
+
+        vec3 col = palette(length(uv0) + i*.4 + u_time*.4);
+
+        d = sin(d*8. + u_time)/8.;
+        d = abs(d);
+
+        d = pow(0.01 / d, 1.2);
+
+        finalColor += col * d;
+    }
+
+
+    gl_FragColor = vec4(finalColor, 1.0);
+}
+`;
 
 export default glsl;

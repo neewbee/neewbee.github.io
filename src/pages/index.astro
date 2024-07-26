@@ -1,19 +1,29 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header/Header";
+import SparkleButton from "../components/SparkleButton/SparkleButton";
+import Pixelate from "../components/Pixelate/Pixelate";
+import img from "./WechatIMG299.jpg";
 ---
 
 <Layout>
-  <main class="flex flex-col justify-center items-center h-screen">
-    <div class="justify-center items-center dark:text-slate-400">
+  <Header />
+  <div class="absolute top-10 right-10"></div>
+  <SparkleButton client:only="react" />
+  <Pixelate
+    style={{ margin: "100px auto" }}
+    client:only="react"
+    width="200"
+    height="200"
+    src={img.src}
+  />
+  <main class="flex flex-col justify-center items-center flex-1">
+    <div
+      class="justify-center items-center dark:text-white font-semibold text-xl text-black"
+    >
       Hi, my name is stephen
     </div>
-    <div class="w-96 dark:text-slate-300">
-      donec urna simul magnis leo ad aptent moderatius porttitor posse habemus
-      hinc constituam nulla qualisque imperdiet delectus autem neglegentur
-      alienum aptent ancillae sagittis varius efficiantur legere sonet fermentum
-      partiendo sem usu leo recteque magnis maluisset porttitor egestas nec
-      scelerisque dicunt adip
-    </div>
+    <div class="w-96 dark:text-slate-300"></div>
   </main>
 </Layout>
 

@@ -1,0 +1,150 @@
+---
+title: A glimpse of refraction and dispersion in Computer Graphics
+tags: ["refraction", "reflection"]
+---
+
+import P1code from "./p1.code.mdx";
+import DispersionCode from "./dispersion.code.mdx";
+import MultipleSampleCode from "./multipul-sample.code.mdx";
+
+<div class="w-full">
+  <p className="prose dark:prose-invert prose-slate flex flex-row items-center">
+    For a long time, I am very curious about Three.js, WebGL. But, it always
+    feel overwhelming to me. I have tried
+    <a href="https://webglfundamentals.org/">WebGL Fundamentals</a> before,but somehow I couldn't persist because there
+    were always some areas I didn't understand, mainly linear algebra.
+  </p>
+  <img src="/refraction-and-dispersion-in-three-js/twitter-01.png" alt=""/>
+  <p>
+    About a year ago, I see some very impressive demos on Twitter.
+    <figure>
+      <video src="/refraction-and-dispersion-in-three-js/demo-01.mp4" autoPlay={true} loop={true}
+             className='w-2/6 my-2 mx-auto'></video>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        <a
+          href="https://x.com/Damian_Kidd/status/1698675519523365090">https://x.com/Damian_Kidd/status/1698675519523365090</a>
+      </figcaption>
+    </figure>
+    This was a C4D project. Later, the author of R3F posted a demo that blew my mind.
+    <figure>
+      <video src="/refraction-and-dispersion-in-three-js/demo-02.mp4" autoPlay={true} loop={true}
+             className='w-2/6 my-2 mx-auto'></video>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        <a
+          href="https://x.com/0xca0a/status/1698798813517942924">https://x.com/Damian_Kidd/status/1698675519523365090</a>
+      </figcaption>
+    </figure>
+    I began to dig into the source code and soon realized I had to learn the fundamentals of WebGL. So I decided to give
+    it another try. I followed the <a href="https://webglfundamentals.org/">WebGL Fundamentals</a> articles and typed
+    all the code. After reading "2D translation, rotation, scale, matrix math," I decided to pick up linear algebra.
+    Fortunately, there are tons of learning materials about linear algebra, such as <a
+    href="https://textbooks.math.gatech.edu/ila/index.html">textbooks.math.gatech.edu</a> and <a
+    href="https://immersivemath.com/ila/index.html">immersivemath</a>. I often referred to another website when I felt
+    confused. After about a month, I thought I was ready to continue my WebGL fundamentals journey, so I started to read
+    the R3F source code. After lots of ChatGPT-ing and googling, I decided to write an article. Maybe this will give me
+    a better understanding.
+
+    > Teaching is the highest form of understanding
+
+    <h2>The most simple case 2d refraction</h2>
+
+    Consider a 2D plane and a background. What will it look like when viewed through the 2D plane? The first thing that
+    comes to mind is refraction. Light bends when traveling through different materials.
+
+    <image class='m-auto' src='/refraction-and-dispersion-in-three-js/refraction.svg'></image>
+
+    This is a great article written by <a href="https://blog.maximeheckel.com/">Maxime</a>. You can play this demo by
+    clicking the link in the description. There are only a glass and an object. So, how do we solve this? Simple!
+
+    - render the scene without the \*glass\* and save the render data
+    - pass the image data to *glass* mesh shader and calculate the final color output
+    - render the *glass*
+
+    <figure>
+      <image src="/refraction-and-dispersion-in-three-js/dispersion-effect.png"
+             className='w-4/4 my-2 mx-auto'></image>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        https://neewbee.github.io/dispersion-effect/ (final result)
+      </figcaption>
+    </figure>
+
+    Here is a code snippet taken from <a href="https://blog.maximeheckel.com/">Maxime</a>.
+    <P1code></P1code>
+
+    Steps 1 and 3 are easy to understand. Step 2 is where the magic happens. After applying the refraction effect in
+    shaders, you can see that we have a refraction effect.
+    <image class='m-auto' src='/refraction-and-dispersion-in-three-js/step-1.0.png' alt="Refraction Step 1"/>
+
+    The next step is to make this more realistic. What we could do includes:
+
+    <h3>dispersion</h3>
+    Because white light is a combination of all colors in the spectrum, in the fragment shader, calculate each RGB
+    channel with different IOR values.
+    <image class='m-auto' src='/refraction-and-dispersion-in-three-js/dispersion.png'></image>
+    <DispersionCode></DispersionCode>
+    <h3>multiple sampling</h3>
+    In real life, light is a contains all wavelengths of light in a certain range, but we only use RGB. So to make it
+    more realistic, make a loop, and in each loop, and an offset so the output looks <i>smooth</i>
+    <MultipleSampleCode></MultipleSampleCode>
+    <h2>3d world</h2>
+    In a 3D world, there are other things to consider:
+    Firstly, refraction happens at least twice, in and out. So we need to sample two times:
+    the <i>THREE.FrontSide</i> and the <i>THREE.BackSide</i>.
+    Secondly, there are reflections and diffuse lighting.
+
+    <h3>backface render</h3>
+    Light travels in the medium and gets reflected and refracted multiple times. The ideal solution would be using ray
+    tracing, but it's not feasible in real time. The least we could do is to sample two times: first, sample the back
+    side of the mesh with the background, then use the rendered result as texture and render with the front side. This
+    way, it looks more realistic.
+
+    <figure>
+      <image src="/refraction-and-dispersion-in-three-js/backface.50.webp" className='w-4/4 my-2 mx-auto'/>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        with backface rendering
+      </figcaption>
+    </figure>
+    <figure>
+      <image src="/refraction-and-dispersion-in-three-js/no-backface.50.webp" className='w-4/4 my-2 mx-auto'/>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        without backface rendering
+      </figcaption>
+    </figure>
+
+    <h3>reflection,Specular & Diffuse</h3>
+    I've talked about refractions; now, let's talk about reflection. We already know that light bounces back from the
+    surface depending on the roughness of the surface and the viewing angle.
+
+    <figure>
+      <image src="/refraction-and-dispersion-in-three-js/phong-and-blinn-phong.png" className='w-4/4 my-2 mx-auto'/>
+      <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+        <a href="https://www.shadertoy.com/view/7tKcDW">Multiple Phong Shading Examples</a>
+      </figcaption>
+    </figure>
+
+    There is a model called the Blinn–Phong reflection model. You can check out <a
+    href="https://zhuanlan.zhihu.com/p/352209183">入门Shading，详解Blinn-Phong和Phong光照模型</a> or <a
+    href="https://learnopengl.com/Advanced-Lighting/Advanced-Lighting">Advanced Lighting</a> for a better understanding.
+
+
+    <h3>Fresnel effect</h3>
+    >FRESNEL EFFECT: this effect establishes that the amount of reflected light rays that we perceive depends on the
+    angle at which we observe the material. A material reflects less light when we look directly at it (at an angle of 0
+    °, called “fresnel zero”, or F0), and reflects more light at grazing angles. For example, when we enter a lake and
+    look down, we can see the bottom clearly (because looking directly the water reflects very little light). If we look
+    at the horizon we realize that the water reflects much more light, almost like a mirror. The minimum reflectivity
+    value of a material, the F0, is the value that we will use on some of our maps. The PBR shader automatically
+    transitions between F0 and maximum reflectivity according to the angle. (source: <a
+    href="https://luismesquita.artstation.com/blog/PwEm/everything-about-pbr-textures-and-a-little-more-part-1">everything-about-pbr-textures-and-a-little-more-part-1</a>)
+
+    <figure>
+      <image src="/refraction-and-dispersion-in-three-js/fresnel.png" className='w-4/4 my-2 mx-auto'/>
+    </figure>
+
+    <h3>conclusion</h3>
+    As you can see, I didn't give much code examples. This article means to give an glimpse of how that demo works. and
+    a summary of the knowledge I have acquired over the past phase. Hope you learned something.😄
+
+  </p>
+
+</div>

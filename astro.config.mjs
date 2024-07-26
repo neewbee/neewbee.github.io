@@ -43,6 +43,11 @@ export default defineConfig({
     extendDefaultPlugins: true,
   },
   vite: {
+    server: {
+      watch: {
+        ignored: ['**/.idea/workspace.xml']
+      }
+    },
     plugins: [
       // https://www.npmjs.com/package/vite-plugin-glsl
       glsl({

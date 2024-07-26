@@ -15,15 +15,17 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link href="/public/output.css" rel="stylesheet" />
+    <link href="/output.css" rel="stylesheet" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <style></style>
   </head>
   <!-- ><-->
   <body class="bg-white dark:bg-gray-900">
-    <div class="flex flex-col min-h-screen max-w-5xl mx-auto w-11/12">
-      <div class="max-w-2xl m-auto w-11/12">
+    <div class="min-h-screen max-w-5xl mx-auto w-11/12">
+      <div
+        class="max-w-3xl m-auto w-11/12 font-mono dark:text-white text-l text-black flex flex-col items-center"
+      >
         <slot />
       </div>
     </div>
