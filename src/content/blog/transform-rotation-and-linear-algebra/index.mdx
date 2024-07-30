@@ -4,24 +4,124 @@ tags: ["refraction", "reflection"]
 ---
 
 <div class="w-full">
-  <h2></h2>
-  <image
-    style="background: white;"
-    className="mx-auto"
-    src="/transform-rotation-and/coordinate.svg"
-  ></image>
+
+  <h2>Translation</h2>
+  For every vertex coordinate of shape $S$, point $p(x, y, z)$ apply a transition and
+  get point $p(x', y', z')$
+  <div>
+    <image
+      style="background: white;padding: 10px;"
+      className="mx-auto"
+      src="/transform-rotation-and/coordinate.svg"
+    ></image>
+  </div>
+  <div>So we have</div>
+  <div>
+    ```math
+    x' = x + T_x \\
+    y' = y + T_y \\
+    z' = z + T_z
+    ```
+  </div>
+  <div>In this case Tz is $0$, very intuitive!</div>
+  <h2>Rotation</h2>
+  First, let's assume we are rotating around z-axis. Pick any point $p$. point $p$
+  move to point $p'$ after the rotation.
+  <div>
+    <image
+      style="background: white;padding: 10px;"
+      className="mx-auto"
+      src="/transform-rotation-and/rotation.svg"
+    ></image>
+  </div>
+  We have
+  #### Equation 1.1
+  <div>
+    ```math x = r\cos\alpha \\\\
+    y = r\sin\alpha
+    ```
+  </div>
+  <div>Similarly</div>
+  <div>
+    ```math
+    x'= r\cos(\alpha + \beta) \\\\
+    y'= r\sin(\alpha + \beta)
+    ```
+  </div>
+  <div>Use the addition theorem of trigonometric functions</div>
+  <div>
+    ```math
+    x'= r(\cos\alpha\cos\beta - \sin\alpha\sin\beta) \\\\
+    y'= r(\sin\alpha\cos\beta + \cos\alpha\sin\beta)
+    ```
+  </div>
+
+  <div>By assigning [**Equation 1.1**](#equation-11), you get the following expressions</div>
+
+  <div>
+
+    #### Equation 1.2
+    ```math
+    x'= x\cos\beta-y\sin\beta \\\\
+    y'= x\sin\beta + y\cos\beta \\\\
+    z = z'
+    ```
+
+  </div>
+
+  <h2>Transform Maticx</h2>
+  <div>
+    You will find it time consuming to write a mathematical expression every time
+    you need a new set of transformation. To solve this problem, we introduce a
+    new tool: Matrix.
+  </div>
+
+  <div>
+    ```math
+    \begin{bmatrix}
+    x' \\
+    y' \\
+    z'
+    \end{bmatrix} = \begin{bmatrix}
+    a & b & c \\
+    d & e & f \\
+    g & h & i
+    \end{bmatrix} \times \begin{bmatrix}
+    x \\
+    y \\
+    z
+    \end{bmatrix}
+    ```
+  </div>
+  <div>
+    For now, you just *hard code* how matrix multiplication works, you could learn linear algebra later.
+  </div>
+  <div>
+    ```math
+    x'= ax + by + cz \\\\
+    y'= dx + ey + fz \\\\
+    z' = gx + hy + iz
+    ```
+  </div>
+  comparing with [**Equation 1.2**](#equation-12), we know that $a=\cos\beta$, $b=-\sin\beta$ and $c=0$. Also,
+  $d=\sin\beta$, $e=\cos\beta$ $f=0$ $g=0$ $h=0$ $i=1$, then we have matrix
+  <div>
+    ```math
+    \begin{bmatrix}
+    x' \\
+    y' \\
+    z'
+    \end{bmatrix} = \begin{bmatrix}
+    \cos\beta & -\sin\beta & 0 \\
+    \sin\beta & \cos\beta & 0 \\
+    0 & 0 & 1
+    \end{bmatrix} \times \begin{bmatrix}
+    x \\
+    y \\
+    z
+    \end{bmatrix}
+    ```
+    We call this a **transformation matrix**
+  </div>
+
 </div>
-
-```math
-E=mc^2
-```
-
-```math
-\sqrt{3x-1}+(1+x)^2
-```
-
-```math
-L = \frac{1}{2} \rho v^2 S C_L
-\int \oint \sum \prod
-\alpha A
-```

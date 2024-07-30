@@ -13,7 +13,9 @@ export default {
       files: '*.mdx',
       options: {
         parser: 'mdx',
+        embeddedLanguageFormatting: 'off'
       },
     },
   ],
+  embeddedLanguageFormatting: 'off'
 };
