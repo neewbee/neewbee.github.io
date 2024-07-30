@@ -2,7 +2,8 @@ import {defineConfig} from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
 import glsl from "vite-plugin-glsl";
-
+import rehypeKatex from 'rehype-katex'; // relevant
+import remarkMath from 'remark-math';   // relevant
 import {remarkReadingTime} from "./src/utils/remark-reading-time.mjs";
 
 import rehypePrettyCode from "rehype-pretty-code";
@@ -18,7 +19,24 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: true,
     }),
-    mdx(),
+    mdx({
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [
+        rehypeKatex,
+        [
+          rehypePrettyCode,
+          {
+            theme: "dracula",
+            onVisitHighlightedLine(node) {
+              // node.properties.className.push('highlighted');
+            },
+            onVisitHighlightedWord(node) {
+              // node.properties.className = ['word'];
+            },
+          },
+        ],
+      ],
+    }),
     react({
       include: ["**/react/*"],
     }),

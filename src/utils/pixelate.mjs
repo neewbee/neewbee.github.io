@@ -2,18 +2,17 @@ const TWO_PI = Math.PI * 2
 const QUARTER_PI = Math.PI * 0.25
 
 
-
 // check for canvas support
 var canvas = document.createElement('canvas')
 var isCanvasSupported = canvas.getContext && canvas.getContext('2d')
 
 // don't proceed if canvas is no supported
-if ( !isCanvasSupported ) {
-  return
+if (!isCanvasSupported) {
+  // return
 }
 
 
-function ClosePixelation( img, options ) {
+function ClosePixelation(img, options) {
   this.img = img
   // creat canvas
   var canvas = this.canvas = document.createElement('canvas')
@@ -22,40 +21,40 @@ function ClosePixelation( img, options ) {
   canvas.className = img.className
   canvas.id = img.id
 
-  this.render( options )
+  this.render(options)
 
   // replace image with canvas
-  img.parentNode.replaceChild( canvas, img )
+  img.parentNode.replaceChild(canvas, img)
 
 }
 
-ClosePixelation.prototype.render = function( options ) {
+ClosePixelation.prototype.render = function (options) {
   this.options = options
   // set size
   var w = this.width = this.canvas.width = this.img.width
   var h = this.height = this.canvas.height = this.img.height
   // draw image on canvas
-  this.ctx.drawImage( this.img, 0, 0 )
+  this.ctx.drawImage(this.img, 0, 0)
   // get imageData
 
   try {
-    this.imgData = this.ctx.getImageData( 0, 0, w, h ).data
-  } catch ( error ) {
-    if ( console ) {
-      console.error( error )
+    this.imgData = this.ctx.getImageData(0, 0, w, h).data
+  } catch (error) {
+    if (console) {
+      console.error(error)
     }
     return
   }
 
-  this.ctx.clearRect( 0, 0, w, h )
+  this.ctx.clearRect(0, 0, w, h)
 
-  for ( var i=0, len = options.length; i < len; i++ ) {
-    this.renderClosePixels( options[i] )
+  for (var i = 0, len = options.length; i < len; i++) {
+    this.renderClosePixels(options[i])
   }
 
 }
 
-ClosePixelation.prototype.renderClosePixels = function( opts ) {
+ClosePixelation.prototype.renderClosePixels = function (opts) {
   var w = this.width
   var h = this.height
   var ctx = this.ctx
@@ -74,10 +73,10 @@ ClosePixelation.prototype.renderClosePixels = function( opts ) {
   // var diamondSize = size / Math.SQRT2
   // var halfDiamondSize = diamondSize / 2
 
-  if (  offset ){
+  if (offset) {
     offsetX = offset.x || 0
     offsetY = offset.y || 0
-  } else if ( Array.isArray( offset) ){
+  } else if (Array.isArray(offset)) {
     offsetX = offset[0] || 0
     offsetY = offset[1] || 0
   } else {
@@ -86,24 +85,24 @@ ClosePixelation.prototype.renderClosePixels = function( opts ) {
 
   var row, col, x, y, pixelY, pixelX, pixelIndex, red, green, blue, pixelAlpha
 
-  for ( row = 0; row < rows; row++ ) {
-    y = ( row - 0.5 ) * res + offsetY
+  for (row = 0; row < rows; row++) {
+    y = (row - 0.5) * res + offsetY
     // normalize y so shapes around edges get color
-    pixelY = Math.max( Math.min( y, h-1), 0)
+    pixelY = Math.max(Math.min(y, h - 1), 0)
 
-    for ( col = 0; col < cols; col++ ) {
-      x = ( col - 0.5 ) * res + offsetX
+    for (col = 0; col < cols; col++) {
+      x = (col - 0.5) * res + offsetX
       // normalize y so shapes around edges get color
-      pixelX = Math.max( Math.min( x, w-1), 0)
-      pixelIndex = ( pixelX + pixelY * w ) * 4
-      red   = imgData[ pixelIndex + 0 ]
-      green = imgData[ pixelIndex + 1 ]
-      blue  = imgData[ pixelIndex + 2 ]
-      pixelAlpha = alpha * ( imgData[ pixelIndex + 3 ] / 255)
+      pixelX = Math.max(Math.min(x, w - 1), 0)
+      pixelIndex = (pixelX + pixelY * w) * 4
+      red = imgData[pixelIndex + 0]
+      green = imgData[pixelIndex + 1]
+      blue = imgData[pixelIndex + 2]
+      pixelAlpha = alpha * (imgData[pixelIndex + 3] / 255)
 
-      ctx.fillStyle = 'rgba(' + red +','+ green +','+ blue +','+ pixelAlpha + ')'
+      ctx.fillStyle = 'rgba(' + red + ',' + green + ',' + blue + ',' + pixelAlpha + ')'
 
-      switch ( opts.shape ) {
+      switch (opts.shape) {
         // case 'circle' :
         //   ctx.beginPath()
         //   ctx.arc ( x, y, halfSize, 0, TWO_PI, true )
@@ -119,7 +118,7 @@ ClosePixelation.prototype.renderClosePixels = function( opts ) {
         //   break
         default :
           // square
-          ctx.fillRect( x - halfSize, y - halfSize, size, size )
+          ctx.fillRect(x - halfSize, y - halfSize, size, size)
       } // switch
     } // col
   } // row
@@ -127,8 +126,8 @@ ClosePixelation.prototype.renderClosePixels = function( opts ) {
 }
 
 // enable img.closePixelate
-HTMLImageElement.prototype.closePixelate = function ( options ) {
-  return new ClosePixelation( this, options )
+HTMLImageElement.prototype.closePixelate = function (options) {
+  return new ClosePixelation(this, options)
 }
 
 // put in global namespace
