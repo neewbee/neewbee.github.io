@@ -1,11 +1,12 @@
 ---
-title: Transform, rotation and linear algebra
+title: 'modelMatrix: Rotation, Translation and Scaling'
 tags: ["refraction", "reflection"]
 ---
 
 <div class="w-full">
-
-  <h2>Translation</h2>
+  <h2>Transformations</h2>
+  There are three kind of basic **linear** transformation, we call this **affine transformation**.
+  <h3>Translation</h3>
   For every vertex coordinate of shape $S$, point $p(x, y, z)$ apply a transition and
   get point $p(x', y', z')$
   <div>
@@ -16,6 +17,7 @@ tags: ["refraction", "reflection"]
     ></image>
   </div>
   <div>So we have</div>
+  #### Equation 1.0
   <div>
     ```math
     x' = x + T_x \\
@@ -24,7 +26,7 @@ tags: ["refraction", "reflection"]
     ```
   </div>
   <div>In this case Tz is $0$, very intuitive!</div>
-  <h2>Rotation</h2>
+  <h3>Rotation</h3>
   First, let's assume we are rotating around z-axis. Pick any point $p$. point $p$
   move to point $p'$ after the rotation.
   <div>
@@ -69,12 +71,28 @@ tags: ["refraction", "reflection"]
 
   </div>
 
-  <h2>Transform Maticx</h2>
+  <h3>Scaling</h3>
   <div>
-    You will find it time consuming to write a mathematical expression every time
-    you need a new set of transformation. To solve this problem, we introduce a
-    new tool: Matrix.
+    <image
+      style="background: white;padding: 10px;"
+      className="mx-auto"
+      src="/transform-rotation-and/scaling.svg"
+    ></image>
   </div>
+  Clearly, We have
+  #### Equation 1.3
+  ```math
+  x'= S_x \times x \\\\
+  y'= S_y \times y \\\\
+  z = S_z \times z
+  ```
+  <h2>Matrices</h2>
+  You will find it time consuming to write a mathematical expression every time
+  you need a new set of transformation. To solve this problem, we introduce a
+  new tool: Matrix.
+
+  <h3>Rotation Matrix</h3>
+  First, there is transformation
 
   <div>
     ```math
@@ -122,6 +140,94 @@ tags: ["refraction", "reflection"]
     \end{bmatrix}
     ```
     We call this a **transformation matrix**
+  </div>
+
+  <h3>Translation Matrix</h3>
+What about translation? You can't product $x = x + T_x$ by 3x3 matrix. Again, yuo have to _hard code_ the resolution.
+the answer is to use to 4x4 matrix called Homogeneous Transformation Matrix
+
+  <div>
+    ```math
+    \begin{bmatrix}
+    x' \\
+    y' \\
+    z' \\
+    1
+    \end{bmatrix} = \begin{bmatrix}
+    1 & 0 & 0 & T_x \\
+    0 & 1 & 0 & T_y \\
+    0 & 0 & 1 & T_x \\
+    0 & 0 & 0 & 1
+    \end{bmatrix} \times \begin{bmatrix}
+    x \\
+    y \\
+    z \\
+    1
+    \end{bmatrix}
+    ```
+  </div>
+
+You might wonder why there are four coordinates for $p(x, y, z)$, this is called Homogeneous coordinates and you can ignore it.
+
+  <h3>Scaling Matrix</h3>
+  <div>
+    We can get a scaling matrix:
+    ```math
+    \begin{bmatrix}
+    x' \\
+    y' \\
+    z' \\
+    1
+    \end{bmatrix} = \begin{bmatrix}
+    S_x & 0 & 0 & 0 \\
+    0 & S_y & 0 & 0 \\
+    0 & 0 & S_z & 0 \\
+    0 & 0 & 0 & 1
+    \end{bmatrix} \times \begin{bmatrix}
+    x \\
+    y \\
+    z \\
+    1
+    \end{bmatrix}
+    ```
+  </div>
+
+  <h3>modelMatrix</h3>
+  Say we want to do a translation $T$, then rotation $R$ followed by scaling $S$. First we make a translation matrix multiply origin Matrix $A$
+  <p>step1:</p>
+  <div>
+    ```math
+    T \cdot A
+    ```
+  </div>
+
+  <p>step2:</p>
+  <div>
+    ```math
+    R \cdot T \cdot A
+    ```
+  </div>
+
+  <p>step3:</p>
+  <div>
+    ```math
+    S \cdot R \cdot T \cdot A
+
+    ```
+
+  </div>
+
+  <div>
+    An important thing you need to know is that
+    <div>
+      ```math
+      S \cdot R \cdot A  \neq  R \cdot S \cdot A \\
+      (S \cdot R) \cdot T \cdot A = S \cdot (R \cdot T) \cdot A
+
+      ```
+    </div>
+    means that matrix multiplication is associative but not commutative. We call this kind of matrix  $M = S \cdot R \cdot T $ modelMatrix
+
   </div>
 
 </div>
