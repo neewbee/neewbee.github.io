@@ -1,10 +1,10 @@
-import {defineConfig} from "astro/config";
+import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
 import glsl from "vite-plugin-glsl";
 import rehypeKatex from 'rehype-katex'; // relevant
 import remarkMath from 'remark-math';   // relevant
-import {remarkReadingTime} from "./src/utils/remark-reading-time.mjs";
+import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 
 import rehypePrettyCode from "rehype-pretty-code";
 
@@ -15,6 +15,9 @@ import react from "@astrojs/react";
  */
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://neewbee.github.io',
+  base: '/',
+  trailingSlash: 'always',
   integrations: [
     tailwind({
       applyBaseStyles: true,
