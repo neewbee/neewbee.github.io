@@ -17,7 +17,6 @@ import react from "@astrojs/react";
 export default defineConfig({
   site: 'https://neewbee.github.io',
   base: '/',
-  trailingSlash: 'always',
   integrations: [
     tailwind({
       applyBaseStyles: true,

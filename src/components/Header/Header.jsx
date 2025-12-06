@@ -6,10 +6,10 @@ export default function Header() {
           <a href="/">Home</a>
         </li>
         <li>
-          <a href="/experiments">Experiments</a>
+          <a href="/experiments/">Experiments</a>
         </li>
         <li>
-          <a href="/blog">blog</a>
+          <a href="/blog/">blog</a>
         </li>
         <li className="hover:bg-transparent hover:cursor-pointer">
           <a href="/about-me">About Me</a>
